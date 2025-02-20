@@ -1,0 +1,26 @@
+import React from 'react'
+
+const Tutorial = () => {
+  return (
+    <div>
+      <div className="tutorial-container" style={{height: 'auto'}}>
+    <h1 className="tutorial-title">
+      <span className="title-bold">VideoCrafter</span>
+      <span className="title-highlight">Tutorial</span>
+    </h1>
+    <p className="tutorial-description">
+      In This Tutorial, We'll Walk You Through How To Use VideoCrafter.Io To Create
+      High-Converting Video Sales Letters With Ease.
+    </p>
+    <div className="video-placeholder">
+      <video id="tutorial-video" className="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"
+        data-setup='{ "fluid" : true }' width="100%" poster="https://vlsmlsaker.s3.amazonaws.com/videos/home-video/intro-poster.png">
+        <source src="https://vlsmlsaker.s3.amazonaws.com/videos/home-video/intro.mp4" type="video/mp4" />
+      </video>
+    </div>
+  </div>
+    </div>
+  )
+}
+
+export default Tutorial

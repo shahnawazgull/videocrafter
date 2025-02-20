@@ -8,32 +8,32 @@ import Banner from '@/components/Landing/Banner'
 import Placeholder from '@/components/Landing/Placeholder'
 import Built from '@/components/Landing/Built'
 import Story from '@/components/Landing/Story'
-
+import Work from '@/components/Landing/Work'
+import Beats from '@/components/Landing/Beats'
+import Tutorial from '@/components/Landing/Tutorial'
+import Plans from '@/components/Landing/Plans'
+import Free from '@/components/Landing/Free'
+import Commissions from '@/components/Landing/Commissions'
+import GetInTouch from '@/components/Landing/GetInTouch'
+import Background from '@/components/Landing/Background'
+import Footer from '@/components/Footer/Footer'
 const Page = () => {
   return (
-    <div className='background'>
-      <img
-        src="https://vlsmlsaker.s3.amazonaws.com/assets/background/Lines.svg"
-        alt="lines"
-        className="lines"
-      />
-      {/* Ellipse Image 1 */}
-      <img
-        src="https://vlsmlsaker.s3.amazonaws.com/assets/background/Ellipse%202.svg"
-        alt=""
-        className="ellipse2"
-      />
-      {/* Ellipse Image 2 */}
-      <img
-        src="https://vlsmlsaker.s3.amazonaws.com/assets/background/Ellipse%202.svg"
-        alt=""
-        className="ellipse2"
-      />
+    <div>
+      <Background/>
       <Header />
       <Banner/>
       <Placeholder/>
       <Built/>
       <Story/>
+      <Work/>
+      <Beats/>
+      <Tutorial/>
+      <Plans/>
+      <Free/>
+      <Commissions/>
+      <GetInTouch/>
+      <Footer/>
     </div>
   )
 }
