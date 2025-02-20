@@ -15,18 +15,18 @@ const Index = () => {
 
           <div className="links">
             <div className="link">
-              <a href="#">Home</a>
-              <a href="#Portfolio">Portfolio</a>
-              <a href="#HowItWorks">Features</a>
-              <a href="#pricing">Pricing</a>
-              <a href="#contact">Contact</a>
+              <Link href="/#">Home</Link>
+              <Link href="/#Portfolio">Portfolio</Link>
+              <Link href="/#HowItWorks">Features</Link>
+              <Link href="/#pricing">Pricing</Link>
+              <Link href="/#contact">Contact</Link>
             </div>
 
             <div className="line"></div>
 
             <div className="buttons">
-              <a href="/accounts/login">Login</a>
-              <a href="#pricing" className="getStarted">Get started</a>
+              <Link href="/accounts/login">Login</Link>
+              <Link href="#pricing" className="getStarted">Get started</Link>
             </div>
           </div>
 
@@ -48,13 +48,13 @@ const Index = () => {
             >
               <div className="topbar-grey"></div>
               <div className="links-topbar">
-                <a href="#">Home</a>
-                <a href="#Portfolio">Portfolio</a>
-                <a href="#HowItWorks">Features</a>
-                <a href="#pricing">Pricing</a>
-                <a href="#contact">Contact</a>
+                <Link href="#">Home</Link>
+                <Link href="#Portfolio">Portfolio</Link>
+                <Link href="#HowItWorks">Features</Link>
+                <Link href="#pricing">Pricing</Link>
+                <Link href="#contact">Contact</Link>
                 <hr className="separator" />
-                <a href="/accounts/login">Login</a>
+                <Link href="/accounts/login">Login</Link>
               </div>
             </div>
           </div>
