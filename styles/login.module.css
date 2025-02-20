@@ -1,0 +1,115 @@
+/* styles/login.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap');
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden; /* Prevent background image from overflowing */
+}
+
+.backgroundImage {
+    position: absolute;
+    z-index: -1;
+    width: 1000px;
+    height: auto;
+    filter: blur(400px);
+    opacity: 0.35; /* Use decimal for opacity */
+}
+
+.formContainer {
+    width: 400px;
+    padding: 40px 32px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0px 4px 4px -4px rgba(12, 12, 13, 0.05), 
+                0px 16px 32px -4px rgba(12, 12, 13, 0.1);
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    row-gap: 48px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    row-gap: 32px;
+    flex-direction: column;
+}
+
+.logoSvg {
+    display: flex;
+    align-items: center;
+}
+
+.logoText {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 29.26px;
+    text-align: left;
+}
+
+.formGroup {
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+}
+
+.formGroup label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+}
+
+.passwordInput {
+    position: relative;
+}
+
+.toggleIcon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.forgotPassword {
+    color: #864AF9;
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    text-align: right;
+}
+
+.button {
+    background-color: #864AF9;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #763acf;
+}
