@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 const footer = () => {
@@ -20,16 +21,16 @@ const footer = () => {
             <h3>COMPANY</h3>
             <ul>
               <li>
-                <a href="#HowItWorks">Features</a>
+                <Link href="/#HowItWorks">Features</Link>
               </li>
               <li>
-                <a href="#Portfolio">Portfolio</a>
+                <Link href="/#Portfolio">Portfolio</Link>
               </li>
               <li>
-                <a href="#pricing">Pricing</a>
+                <Link href="/#pricing">Pricing</Link>
               </li>
               <li>
-                <a href="#contact">Contact</a>
+                <Link href="/#contact">Contact</Link>
               </li>
             </ul>
           </div>
@@ -38,16 +39,16 @@ const footer = () => {
             <h3>HELP</h3>
             <ul>
               <li>
-                <a href="/terms-and-conditions/">Terms & Conditions</a>
+                <Link href="/terms/terms-condition/">Terms & Conditions</Link>
               </li>
               <li>
-                <a href="/privacy-policy/">Privacy Policy</a>
+                <Link href="/terms/privacy/">Privacy Policy</Link>
               </li>
               <li>
-                <a href="/refund-policy/">Refund Policy</a>
+                <Link href="/terms/refund/">Refund Policy</Link>
               </li>
               <li>
-                <a href="/affiliate-terms/">Affiliate Program Terms</a>
+                <Link href="/terms/affiliate/">Affiliate Program Terms</Link>
               </li>
             </ul>
           </div>
