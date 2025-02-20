@@ -1,81 +1,59 @@
-"use client"
+import React from 'react';
+import styles from '/styles/login.module.css'; // Import the CSS module
+import Link from 'next/link';
 
-// pages/login.js
-
-import styles from '/styles/login.module.css';
-import { useState } from 'react';
-
-export default function Login() {
-    const [passwordVisible, setPasswordVisible] = useState(false);
-
-    const togglePasswordVisibility = () => {
-        setPasswordVisible(!passwordVisible);
-    };
-
+const Page = () => {
     return (
         <div className={styles.container}>
-            <img 
-                src="/assets/background/Ellipse 2.svg" 
-                alt="background" 
-                className={styles.backgroundImage} 
-            />
+            <img src="https://vlsmlsaker.s3.amazonaws.com/assets/background/Ellipse%202.svg" alt="" className={styles.backgroundImage}/>
             <div className={styles.formContainer}>
-                <form className={styles.form}>
+                <form action="." method="post" className={styles.form}>
                     <div className={styles.logo}>
-                        <div className={styles.logoSvg}>
-                            <svg 
-                                onClick={() => window.location.href = '/'} 
-                                style={{ cursor: 'pointer' }} 
-                                width="252" 
-                                height="42" 
-                                viewBox="0 0 252 42" 
-                                fill="none" 
-                                xmlns="http://www.w3.org/2000/svg"
-                            >
-                                {/* SVG Paths here */}
-                            </svg>
+                        <div>
+                            <img src="/images/logo.svg" alt="Logo" />
                         </div>
-                        <span className={styles.logoText}>Sign In</span>
+                        <span className={styles.span}>Sign In</span>
                     </div>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="email">Email address:</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            required 
-                            name="email" 
-                            placeholder="Email" 
-                        />
-                    </div>
-                    <div className={styles.formGroup}>
-                        <label htmlFor="password">Password:</label>
-                        <div className={styles.passwordInput}>
-                            <input 
-                                type={passwordVisible ? "text" : "password"} 
-                                name="password" 
-                                id="password" 
-                                required 
-                                placeholder="Password" 
+                    <div className={styles.form}>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="email" className={styles.label}>Email address:</label>
+                            <input className={styles.input}
+                                type="email"
+                                id="email"
+                                required
+                                name="email"
+                                placeholder="Email"
                             />
-                            <div 
-                                className={styles.toggleIcon} 
-                                onClick={togglePasswordVisibility}
-                            >
-                                <img 
-                                    src={passwordVisible ? "/assets/icons/eye-off.svg" : "/assets/icons/eye-open.svg"} 
-                                    alt="eye" 
+                        </div>
+                        <div className={`${styles.formGroup} ${styles.formGroupPassword}`}>
+                            <label htmlFor="password" className={styles.label}>Password:</label>
+                            <input className={styles.input}
+                                type="password"
+                                id="password"
+                                required
+                                name="password"
+                                placeholder="Password"
+                            />
+                            <div className={styles.toggleIcon}>
+                                <img
+                                    src="https://vlsmlsaker.s3.amazonaws.com/assets/icons/eye-open.svg"
+                                    alt="eye-off"
+                                    className="eye"
+                                    id="eye"
                                 />
                             </div>
                         </div>
+                        <Link href="/auth/password_reset" className={styles.forgotPassword}>
+                            Forgot Password?
+                        </Link>
+                        <button type="submit" className={styles.button}>
+                            Sign In
+                        </button>
                     </div>
-                    <a href="/auth/password_reset" className={styles.forgotPassword}>
-                        Forgot Password?
-                    </a>
-                    <button type="submit" className={styles.button}>
-                        Sign In
-                    </button>
                 </form>
             </div>
         </div>
     );
-}
+};
+
+export default Page;
