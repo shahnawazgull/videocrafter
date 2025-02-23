@@ -1,0 +1,41 @@
+.preview {
+    width: 100%;
+    margin-bottom: 28px;
+  }
+  
+  .previewText {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    justify-content: space-between;
+  }
+  
+  .previewBox {
+    width: 80%;
+    height: 600px;
+    background: #EEEEEE;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    flex-direction: column;
+    margin: 0 auto;
+  }
+  
+  .previewBackground {
+    width: fit-content;
+    height: fit-content;
+    background: #000000;
+    position: absolute;
+    bottom: 20px;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .tiktokPreview {
+    display: none;
+  }

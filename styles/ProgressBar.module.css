@@ -1,0 +1,29 @@
+.progressbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 84px;
+    margin-bottom: 56px;
+  }
+  
+  .bar {
+    width: 624px;
+    height: 10px;
+    background: #EEEEEE;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .circle {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: #EEEEEE;
+    border-radius: 90px;
+  }
+  
+  .label {
+    position: absolute;
+    top: -50px;
+  }

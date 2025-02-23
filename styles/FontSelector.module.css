@@ -1,0 +1,14 @@
+.fontSelector {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  
+  .select {
+    width: 100%;
+    padding: 8px 24px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+  }

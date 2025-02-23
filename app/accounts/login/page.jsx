@@ -46,9 +46,11 @@ const Page = () => {
                         <Link href="/auth/password_reset" className={styles.forgotPassword}>
                             Forgot Password?
                         </Link>
+                        <Link href="/home">
                         <button type="submit" className={styles.button}>
                             Sign In
                         </button>
+                        </Link>
                     </div>
                 </form>
             </div>
