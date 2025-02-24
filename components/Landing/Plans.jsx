@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import React from 'react'
 
 const Plans = () => {
@@ -40,7 +41,7 @@ const Plans = () => {
                   <span className="benefits-text">No Credit Card Required</span>
                 </div>
 
-                <a href="/accounts/register/" className="p-button">Get Started</a>
+                <Link href="/accounts/register/signup/" className="p-button">Get Started</Link>
               </div>
 
               <div className="p-cards-grid-item mid">
@@ -80,7 +81,7 @@ const Plans = () => {
                   <span className="benefits-text">Priority Support</span>
                 </div>
 
-                <a href="/accounts/subscribe/growth?success_path=/accounts/register/&cancel_path=/home" className="p-button">Get Started</a>
+                <Link href="/accounts/register/after-payment" className="p-button">Get Started</Link>
               </div>
 
               <div className="p-cards-grid-item">
@@ -120,7 +121,7 @@ const Plans = () => {
                   <span className="benefits-text">Dedicated Support</span>
                 </div>
 
-                <a href="/accounts/subscribe/pro?success_path=/accounts/register/&cancel_path=/home" className="p-button">Get Started</a>
+                <Link href="/accounts/register/after-payment" className="p-button">Get Started</Link>
               </div>
 
             </div>

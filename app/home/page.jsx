@@ -21,7 +21,7 @@ export default function Home() {
         <link rel="stylesheet" href="https://vlsmlsaker.s3.amazonaws.com/css/music.css" />
         <link rel="stylesheet" href="/temp.css" />
       </Head>
-      <div className="bg"></div>
+      <div></div>
       <Header />
       <ProgressBar />
       <MainContent />

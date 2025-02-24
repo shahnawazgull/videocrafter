@@ -43,7 +43,7 @@ const Page = () => {
                                 />
                             </div>
                         </div>
-                        <Link href="/auth/password_reset" className={styles.forgotPassword}>
+                        <Link href="/accounts/password-reset/reset" className={styles.forgotPassword}>
                             Forgot Password?
                         </Link>
                         <Link href="/home">

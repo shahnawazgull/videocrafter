@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import '/app/temp.css';
 import '/styles/style.css';
 import '/styles/music.css';
+import Link from 'next/link';
 const Header = () => {
   useEffect(() => {
     const pfp = document.getElementById('pfp');
@@ -35,7 +36,7 @@ const Header = () => {
           <div className="img" id="pfp">
             <div className="img-sub-div">
               <div className="img-sub">
-                <img src="/assets/images/profile.svg" alt="" />
+                <img src="/images/profile.svg" alt="" />
               </div>
             </div>
           </div>
@@ -51,9 +52,9 @@ const Header = () => {
                   <span className="dropdownText" style={{ width: 'fit-content', color: '#19191980' }}>9979</span>
                 </div>
               </div>
-              <span className="dropdownText"><a href="/video/assets">Manage Asset Library</a></span>
-              <span className="dropdownText"><a href="/text/manage_textfile">Manage Video Drafts</a></span>
-              <span className="dropdownText"><a href="/accounts/manage-subscription">Manage Subscription</a></span>
+              <span className="dropdownText"><Link href="/video/assets">Manage Asset Library</Link></span>
+              <span className="dropdownText"><Link href="/text/manage_textfile">Manage Video Drafts</Link></span>
+              <span className="dropdownText"><Link href="/accounts/manage-subscription">Manage Subscription</Link></span>
             </div>
             <div className="profile-last-div">
               <span className="dropdownText"><a href="/accounts/logout">Log Out</a></span>
