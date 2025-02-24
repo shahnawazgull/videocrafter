@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import '/app/temp.css';
 import '/styles/style.css';
 import '/styles/music.css';
+import Link from 'next/link';
 
 const MainContent = () => {
   const [fontSize, setFontSize] = useState(22);
@@ -274,6 +275,8 @@ const MainContent = () => {
 
     // TikTok visibility
     const previewBackgroundDiv = document.getElementById('previewBackground');
+    const previewBox = document.getElementById('preview-box');
+    const videoText = document.getElementById('videoText');
     const tiktokPreviewDiv = document.getElementById('tiktokPreview');
     const fontSelectLabel = document.querySelector('.Upload-Font-File-text');
     const fontSelectDropdown = document.querySelector('.Upload-Font-File-Upload');
@@ -291,7 +294,11 @@ const MainContent = () => {
       fontSizeSlider.style.display = 'none';
       borderRadiusLabel.style.display = 'none';
       borderRadiusSliderDiv.style.display = 'none';
+      videoText.style.display = 'none';
+      previewBox.style.background = `url("https://vlsmlsaker.s3.amazonaws.com/assets/background/tiktok.png") center/cover no-repeat`;
     } else {
+      previewBox.style.background = '#EEEEEE';
+      videoText.style.display = 'flex';
       previewBackgroundDiv.style.display = 'flex';
       tiktokPreviewDiv.style.display = 'none';
       fontSelectLabel.style.display = 'flex';
@@ -318,7 +325,7 @@ const MainContent = () => {
   return (
     <div className="main-dimension-div">
       <form action="/text/" method="post" encType="multipart/form-data" className="form" id="text_form">
-        <input type="hidden" name="csrfmiddlewaretoken" value="lWsA9LUBLyMgZ61FmGKS3CBC6pdvj1WcQUKPc4lXxYXprO3n8nU4Wi3UfxwPgR8m" />
+        <input type="hidden" name="csrfmiddlewaretoken" />
         <div className="customise-main">
           <span>Create Your Perfect Video Creative: <br /> Upload, Customize, and Convert!</span>
         </div>
@@ -382,7 +389,7 @@ const MainContent = () => {
               </div>
             </div>
             <div className="11Labs-Api-key-textarea" style={{ marginBottom: '24px' }}>
-              <input id="api_key" type="text" className="text3 text3-input" name="elevenlabs_apikey" placeholder="ElevenLabs Api Key" />
+              <input id="api_key" type="text" className="text3 text3-input" name="elevenlabs_apikey" placeholder="ElevenLabs Api Key"  />
               <p className="error-message" style={{ color: 'red' }}>{apiKeyError}</p>
             </div>
             <div className="Voice-ID-text">
@@ -460,11 +467,13 @@ const MainContent = () => {
             </div>
           </div>
         </div>
+        <Link href=''>
         <button id="submit_form" type="submit" className="done-button">
           <span id="button-text" style={{ fontSize: '18px', fontWeight: '500', lineHeight: '21.94px', textAlign: 'left' }}>
             {isProcessing ? `Processing${'.'.repeat(processingDots)}` : 'Proceed To Scene Selection'}
           </span>
         </button>
+        </Link>
       </form>
     </div>
   );

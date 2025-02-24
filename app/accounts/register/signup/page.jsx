@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
 import '/styles/signup.css';
+import Link from 'next/link';
 
 const Page = () => {
   // State variables for form fields

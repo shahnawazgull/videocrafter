@@ -1,46 +1,55 @@
-import { useEffect } from 'react';
+"use client";
+
+import { useState, useEffect } from 'react';
 import '/app/temp.css';
 import '/styles/style.css';
 import '/styles/music.css';
 import Link from 'next/link';
+
 const Header = () => {
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+
+  // Toggle dropdown visibility on profile click
+  const toggleDropdown = () => {
+    setIsDropdownVisible((prevState) => !prevState);
+  };
+
+  // Close dropdown if click happens outside of dropdown or profile picture
   useEffect(() => {
-    const pfp = document.getElementById('pfp');
-    const dropdown = document.getElementById('pfpdropdown');
+    const handleClickOutside = (event) => {
+      const pfp = document.getElementById('pfp');
+      const dropdown = document.getElementById('pfpdropdown');
 
-    if (pfp && dropdown) {
-      pfp.addEventListener('click', function () {
-        dropdown.classList.toggle('not-present');
-        dropdown.classList.toggle('present');
-      });
+      if (pfp && dropdown && !dropdown.contains(event.target) && !pfp.contains(event.target)) {
+        setIsDropdownVisible(false);
+      }
+    };
 
-      document.addEventListener('click', function (event) {
-        if (!dropdown.contains(event.target) && !pfp.contains(event.target)) {
-          dropdown.classList.remove('present');
-          dropdown.classList.add('not-present');
-        }
-      });
-    }
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
   }, []);
 
   return (
     <header className="header">
       <div className="main-div">
         <div className="sub-main-div">
-          <img src="/images/logo.svg" alt="" />
+          <img src="/images/logo.svg" alt="Logo" />
           <a href="/text" className="anchor-sub-main"></a>
         </div>
         <div className="right">
           <span className="right-span">Credits Remaining: <span id="number">9979</span></span>
           <div className="line"></div>
-          <div className="img" id="pfp">
+          <div className="img" id="pfp" onClick={toggleDropdown}>
             <div className="img-sub-div">
               <div className="img-sub">
-                <img src="/images/profile.svg" alt="" />
+                <img src="/images/profile.svg" alt="Profile" />
               </div>
             </div>
           </div>
-          <div className="not-present" id="pfpdropdown">
+          <div className={isDropdownVisible ? 'present' : 'not-present'} id="pfpdropdown">
             <div className="not-present-sub">
               <span className="not-present-sub-span1">Omar</span>
               <span className="not-present-sub-span2">omar@gmail.com</span>
@@ -54,10 +63,10 @@ const Header = () => {
               </div>
               <span className="dropdownText"><Link href="/video/assets">Manage Asset Library</Link></span>
               <span className="dropdownText"><Link href="/text/manage_textfile">Manage Video Drafts</Link></span>
-              <span className="dropdownText"><Link href="/accounts/manage-subscription">Manage Subscription</Link></span>
+              <span className="dropdownText"><Link href="/manage/manage-subs">Manage Subscription</Link></span>
             </div>
             <div className="profile-last-div">
-              <span className="dropdownText"><a href="/accounts/logout">Log Out</a></span>
+              <span className="dropdownText"><Link href="/">Log Out</Link></span>
             </div>
           </div>
         </div>
