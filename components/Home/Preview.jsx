@@ -77,7 +77,7 @@ const MainContent = () => {
 
     if (validateForm()) {
       setTimeout(() => {
-        window.location.href = '/next-page';
+        window.location.href = '/scene';
         setIsProcessing(false);
       }, 2000);
     } else {
@@ -467,7 +467,7 @@ const MainContent = () => {
             </div>
           </div>
         </div>
-        <Link href=''>
+        <Link href='/scene'>
         <button id="submit_form" type="submit" className="done-button">
           <span id="button-text" style={{ fontSize: '18px', fontWeight: '500', lineHeight: '21.94px', textAlign: 'left' }}>
             {isProcessing ? `Processing${'.'.repeat(processingDots)}` : 'Proceed To Scene Selection'}
