@@ -130,7 +130,14 @@ export default function Home() {
   };
 
   const deleteSlide = (id) => {
-    setSlides(slides.filter((slide) => slide.id !== id));
+    const updatedSlides = slides
+      .filter((slide) => slide.id !== id)
+      .map((slide, index) => ({
+        ...slide,
+        subtitle: `Subtitle ${index + 1}`,
+      }));
+    setSlides(updatedSlides);
+    setSlideCount(updatedSlides.length);
   };
 
   const onDragEnd = (result) => {
@@ -146,24 +153,24 @@ export default function Home() {
   };
 
   const handleTextSelection = (slideId) => {
-    const slide = slides.find((s) => s.id === slideId);
-    if (!slide.isEditing) return;
-    const textarea = document.getElementById(`slide_text_${slideId}`);
-    const selection = textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
-    if (selection) {
+    const selection = window.getSelection();
+    const selected = selection.toString().trim();
+    if (selected) {
       setSelectedSlideId(slideId);
-      setSelectedText(selection);
+      setSelectedText(selected);
       setPopupOpen(true);
     }
   };
 
-  const handlePopupSubmit = () => {
-    const updatedSlides = slides.map((slide) =>
-      slide.id === selectedSlideId
-        ? { ...slide, text: slide.text.replace(selectedText, `<mark>${selectedText}</mark>`), isEditing: false }
-        : slide
-    );
-    setSlides(updatedSlides);
+  const handlePopupSubmit = (shouldHighlight) => {
+    if (shouldHighlight) {
+      const updatedSlides = slides.map((slide) =>
+        slide.id === selectedSlideId
+          ? { ...slide, text: slide.text.replace(selectedText, `<mark>${selectedText}</mark>`), isEditing: false }
+          : slide
+      );
+      setSlides(updatedSlides);
+    }
     setPopupOpen(false);
   };
 
@@ -399,7 +406,7 @@ export default function Home() {
                             >
                               {slide.subtitle}
                             </td>
-                            <td id={`highlightable_${slide.id}`}>
+                            <td id={`highlightable_${slide.id}`} onMouseUp={() => handleTextSelection(slide.id)}>
                               <div className="highlight-sub">
                                 {slide.isEditing ? (
                                   <textarea
@@ -415,11 +422,10 @@ export default function Home() {
                                       setSlides(updatedSlides);
                                     }}
                                     onMouseUp={() => handleTextSelection(slide.id)}
-                                    onKeyUp={() => handleTextSelection(slide.id)}
                                     onKeyDown={(e) => handleKeyPress(e, slide.id)}
                                   />
                                 ) : (
-                                  <span dangerouslySetInnerHTML={{ __html: slide.text }} />
+                                  <span dangerouslySetInnerHTML={{ __html: slide.text || '' }} />
                                 )}
                               </div>
                             </td>
@@ -491,7 +497,6 @@ export default function Home() {
     </>
   );
 }
-
 function PopupModal({ selectedText, onClose, onSubmit }) {
   const [file, setFile] = useState(null);
   const [topic, setTopic] = useState('');
@@ -515,26 +520,60 @@ function PopupModal({ selectedText, onClose, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit();
+    const shouldHighlight = file || (topic && videoClip); // Highlight only if file or topic+clip is selected
+    onSubmit(shouldHighlight);
+  };
+
+  const handleClose = () => {
+    onClose(); // Close without highlighting
   };
 
   return (
     <div className="popup-form popup-modal" style={{ display: 'flex' }}>
       <div className="popup-container">
         <div className="close-btnx close-btn">
-          <button className="close-popup" onClick={onClose}>X</button>
+          <button className="close-popup" onClick={handleClose}>X</button>
         </div>
         <div id="modal-cont">
           <form className="popup-content" onSubmit={handleSubmit} style={{ gridTemplateColumns: '0.7fr 1fr', width: '100%' }}>
             <br />
-            <input type="hidden" name="csrfmiddlewaretoken" value="A5buGtEYdhFBwcSjly8DyqOl74FAQup1aN4GP3T3oXJ8TmIqNygPUvogqZ22B52d" />
+            <input
+              type="hidden"
+              name="csrfmiddlewaretoken"
+              value="A5buGtEYdhFBwcSjly8DyqOl74FAQup1aN4GP3T3oXJ8TmIqNygPUvogqZ22B52d"
+              readOnly
+            />
             <div id="submit-cont">
               <div className="form-group">
-                <input id="slide_text" hidden name="slide_text" value={selectedText} readOnly className="form-input" />
+                <input
+                  id="slide_text"
+                  hidden
+                  name="slide_text"
+                  value={selectedText}
+                  readOnly
+                  className="form-input"
+                />
               </div>
-              <input id="clipId" type="number" hidden name="clipId" value="2298" readOnly />
-              <input type="text" hidden id="remaining" name="remaining" value="starting with a tingling sensation in my back." readOnly />
-              <div style={{ display: 'grid', gridTemplateColumns: '0.7fr 1fr', borderRadius: '8px', border: '1px solid #00000080', overflow: 'hidden' }} className="form-grid-cont">
+              <input
+                id="clipId"
+                type="number"
+                hidden
+                name="clipId"
+                value="2298"
+                readOnly
+              />
+              <input
+                type="text"
+                hidden
+                id="remaining"
+                name="remaining"
+                value="starting with a tingling sensation in my back."
+                readOnly
+              />
+              <div
+                style={{ display: 'grid', gridTemplateColumns: '0.7fr 1fr', borderRadius: '8px', border: '1px solid #00000080', overflow: 'hidden' }}
+                className="form-grid-cont"
+              >
                 <div className="grid-item title form-grid-item begin column-1">
                   <span style={{ height: '50px', alignItems: 'center' }}>Upload Scene</span>
                 </div>
@@ -548,15 +587,33 @@ function PopupModal({ selectedText, onClose, onSubmit }) {
                         <i className="ri-upload-line"></i>
                         <span id="upload-text">Choose File</span>
                       </label>
-                      <i id="clear-file" style={{ display: file ? 'inline' : 'none' }} onClick={clearFileInput} className="ri-close-circle-line"></i>
-                      <input type="file" id="slide_file" name="slide_file" className="upload-input" accept="video/*" onChange={handleFileChange} />
+                      <i
+                        id="clear-file"
+                        style={{ display: file ? 'inline' : 'none' }}
+                        onClick={clearFileInput}
+                        className="ri-close-circle-line"
+                      ></i>
+                      <input
+                        type="file"
+                        id="slide_file"
+                        name="slide_file"
+                        className="upload-input"
+                        accept="video/*"
+                        onChange={handleFileChange}
+                      />
                     </div>
                     <p id="currentFile">{file?.name || ''}</p>
                   </div>
                 </div>
                 <div style={{ borderLeft: '0.8px solid #864AF9' }} className="form-grid-item">
                   <div className="form-group">
-                    <select id="selected_topic" name="selected_topic" className="form-select" value={topic} onChange={handleTopicChange}>
+                    <select
+                      id="selected_topic"
+                      name="selected_topic"
+                      className="form-select"
+                      value={topic}
+                      onChange={handleTopicChange}
+                    >
                       <option value="">Select Topic</option>
                       <option value="17">Male Thinking Clips</option>
                       <option value="18">Male Crying Clips</option>
@@ -564,7 +621,13 @@ function PopupModal({ selectedText, onClose, onSubmit }) {
                     </select>
                   </div>
                   <div className="form-group">
-                    <select id="videoSelect" name="selected_video" className="form-select" value={videoClip} onChange={(e) => setVideoClip(e.target.value)}>
+                    <select
+                      id="videoSelect"
+                      name="selected_video"
+                      className="form-select"
+                      value={videoClip}
+                      onChange={(e) => setVideoClip(e.target.value)}
+                    >
                       <option value="" disabled>Select A Video Clip</option>
                       {topic && (
                         <>
@@ -575,7 +638,14 @@ function PopupModal({ selectedText, onClose, onSubmit }) {
                     </select>
                     <p style={{ color: 'red', fontSize: '13px' }} id="error-slide"></p>
                   </div>
-                  <input type="number" hidden id="is_tiktok" name="is_tiktok" value="0" readOnly />
+                  <input
+                    type="number"
+                    hidden
+                    id="is_tiktok"
+                    name="is_tiktok"
+                    value="0"
+                    readOnly
+                  />
                 </div>
               </div>
             </div>
