@@ -11,6 +11,7 @@ import '/styles/main-scenes.css';
 import '/styles/add-scene-style.css';
 import Header from '@/components/Home/Header';
 import ProgressBar from '@/components/Home/ProgressBar';
+import Link from 'next/link';
 
 export default function Home() {
   const [tutorialModalOpen, setTutorialModalOpen] = useState(false);
@@ -223,7 +224,9 @@ export default function Home() {
           <div className="card">
             <div className="card-header">
               <div id="previousButton">
-                <img src="/images/back.svg" alt="Back" />
+                <Link href='/home'>
+                  <img src="/images/back.svg" alt="Back" />
+                </Link>
               </div>
               <span className="upload-script-heading">Upload Your Script</span>
               <h5></h5>
@@ -470,10 +473,12 @@ export default function Home() {
           <input type="number" name="no_of_slides" id="no_of_slides" hidden value={slideCount} />
 
           <div className="button-container">
-            <button type="button" className="button-container-btn">
-              <span id="button-text">Proceed To Background Music Selection</span>
-              <img src="/images/arrow.svg" alt="Arrow" />
-            </button>
+            <a href='/background-music'>
+              <button type="button" className="button-container-btn">
+                <span id="button-text">Proceed To Background Music Selection</span>
+                <img src="/images/arrow.svg" alt="Arrow" />
+              </button>
+            </a>
           </div>
         </div>
 
