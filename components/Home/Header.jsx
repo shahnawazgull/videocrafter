@@ -79,7 +79,7 @@ const Header = () => {
               </span>
             </div>
             <div className="profile-last-div">
-              <span className="dropdownText"><Link href="/">Log Out</Link></span>
+              <span className="dropdownText"><a href="/">Log Out</a></span>
             </div>
           </div>
         </div>
