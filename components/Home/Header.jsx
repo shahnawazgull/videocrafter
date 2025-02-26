@@ -20,6 +20,7 @@ const Header = () => {
       const pfp = document.getElementById('pfp');
       const dropdown = document.getElementById('pfpdropdown');
 
+      // Only close dropdown if click is outside the dropdown or profile image
       if (pfp && dropdown && !dropdown.contains(event.target) && !pfp.contains(event.target)) {
         setIsDropdownVisible(false);
       }
@@ -27,6 +28,7 @@ const Header = () => {
 
     document.addEventListener('click', handleClickOutside);
 
+    // Cleanup event listener on component unmount
     return () => {
       document.removeEventListener('click', handleClickOutside);
     };
@@ -37,7 +39,7 @@ const Header = () => {
       <div className="main-div">
         <div className="sub-main-div">
           <img src="/images/logo.svg" alt="Logo" />
-          <a href="/text" className="anchor-sub-main"></a>
+          <Link href="/home" className="anchor-sub-main"></Link>
         </div>
         <div className="right">
           <span className="right-span">Credits Remaining: <span id="number">9979</span></span>
@@ -49,7 +51,12 @@ const Header = () => {
               </div>
             </div>
           </div>
-          <div className={isDropdownVisible ? 'present' : 'not-present'} id="pfpdropdown">
+
+          {/* Dropdown Menu */}
+          <div 
+            id="pfpdropdown"
+            className={isDropdownVisible ? 'present' : 'not-present'}
+          >
             <div className="not-present-sub">
               <span className="not-present-sub-span1">Omar</span>
               <span className="not-present-sub-span2">omar@gmail.com</span>
@@ -61,9 +68,15 @@ const Header = () => {
                   <span className="dropdownText" style={{ width: 'fit-content', color: '#19191980' }}>9979</span>
                 </div>
               </div>
-              <span className="dropdownText"><Link href="/video/assets">Manage Asset Library</Link></span>
-              <span className="dropdownText"><Link href="/text/manage_textfile">Manage Video Drafts</Link></span>
-              <span className="dropdownText"><Link href="/manage/manage-subs">Manage Subscription</Link></span>
+              <span className="dropdownText">
+                <Link href="/manage/manage-assets">Manage Asset Library</Link>
+              </span>
+              <span className="dropdownText">
+                <Link href="/manage/manage-video">Manage Video Drafts</Link>
+              </span>
+              <span className="dropdownText">
+                <Link href="/manage/manage-subs">Manage Subscription</Link>
+              </span>
             </div>
             <div className="profile-last-div">
               <span className="dropdownText"><Link href="/">Log Out</Link></span>
