@@ -8,7 +8,7 @@ const Built = () => {
           <h2 className="for-marg">
             Why We Built
             <br />
-            <span className="highlight">VideoCrafter.io</span>
+            <span className="highlight"> VideoCrafter.io</span>
           </h2>
           <p className="highlight-p for-margg">We Know How Frustrating It Can Be To Create High-Conversion Video Ads.</p>
           <p className="highlight-p for-margin">Here's Why</p>

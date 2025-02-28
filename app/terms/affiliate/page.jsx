@@ -1,8 +1,12 @@
 import React from 'react'
 import Background from '@/components/Landing/Background'
-import Header from '@/components/Header/index'
+import Header from '@/components/Header/Header'
 import Footer from '@/components/Footer/Footer'
 import '/styles/terms.css'
+import '/styles/landing.css'
+import '/styles/landing_style.css'
+import '/styles/landing-bck.css'
+import '/styles/landing_style-bck.css'
 const page = () => {
   return (
     <div>

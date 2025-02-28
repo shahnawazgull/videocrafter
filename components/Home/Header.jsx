@@ -69,7 +69,7 @@ const Header = () => {
                 </div>
               </div>
               <span className="dropdownText">
-                <Link href="/manage/manage-assets">Manage Asset Library</Link>
+                <a href="/manage/manage-assets">Manage Asset Library</a>
               </span>
               <span className="dropdownText">
                 <Link href="/manage/manage-video">Manage Video Drafts</Link>
