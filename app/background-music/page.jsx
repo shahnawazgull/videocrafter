@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Header from "@/components/Home/Header";
 import ProgressBar from "@/components/Home/ProgressBar";
+import videojs from "video.js"; // Import Video.js
+import "video.js/dist/video-js.css"; // Import Video.js styles
 import "/styles/bg-music-selection.css";
 
 const Page = () => {
@@ -11,6 +13,44 @@ const Page = () => {
         { id: 1, file: null, startTime: "00:00", endTime: "00:00", volume: 50 },
         { id: 2, file: null, startTime: "00:00", endTime: "00:00", volume: 50 },
     ]);
+
+    const videoRef = useRef(null); // Ref for video element
+    const playerRef = useRef(null); // Ref for Video.js player
+
+    // Initialize Video.js and handle aspect ratio adjustments
+    useEffect(() => {
+        if (!playerRef.current) {
+            const videoElement = videoRef.current;
+            if (!videoElement) return;
+
+            playerRef.current = videojs(videoElement, {
+                fluid: true,
+                controls: true,
+                preload: "auto",
+            });
+
+            playerRef.current.ready(() => {
+                playerRef.current.on("loadedmetadata", () => {
+                    const video = playerRef.current.el().querySelector("video");
+                    const aspectRatio = video.videoWidth / video.videoHeight;
+
+                    const videoContainer = document.getElementById("video-container-box");
+                    if (Math.abs(aspectRatio - 16 / 9) < 0.01) {
+                        videoContainer.style.width = "500px";
+                    } else if (Math.abs(aspectRatio - 9 / 16) < 0.01) {
+                        videoContainer.style.width = "350px";
+                    }
+                });
+            });
+        }
+
+        return () => {
+            if (playerRef.current) {
+                playerRef.current.dispose();
+                playerRef.current = null;
+            }
+        };
+    }, []);
 
     const handleAddMp3 = () => {
         const newId = mp3Templates.length + 1;
@@ -54,7 +94,7 @@ const Page = () => {
         <div className="bg">
             <Header />
             <ProgressBar />
-            <div className="content bg-content ">
+            <div className="content bg-content">
                 <div className="bg-content-sub">
                     <div className="cont">
                         <div className="cont-sub">
@@ -72,11 +112,11 @@ const Page = () => {
                         <div id="video-container-box">
                             <div id="videoPreviewContainer">
                                 <video
+                                    ref={videoRef} // Attach ref to video element
                                     id="my-video"
                                     className="video-js vjs-default-skin vjs-big-play-centered"
                                     controls
                                     preload="auto"
-                                    data-setup='{ "fluid": true }'
                                 >
                                     <source
                                         src="https://vlsmlsaker.s3.amazonaws.com/generated_watermarked_video/watermarked_output_jPqrp-370.mp4"

@@ -1,7 +1,7 @@
 'use client'; // Add this for Next.js client-side component
 
 import React, { useState, useEffect } from 'react';
-import 'video.js/dist/video-js.css'; // Import video.js styles
+
 
 const Story = () => {
   // State for each slider's current index

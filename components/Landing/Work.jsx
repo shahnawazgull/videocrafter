@@ -5,7 +5,7 @@ import Image from 'next/image';
 const Work = () => {
   return (
     <div>
-        {/* Font Awesome CDN Link */}
+       
         <link
           rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
@@ -13,6 +13,8 @@ const Work = () => {
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
+        <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+       
       <div className="howitworks" id="HowItWorks">
         {/* Static images */}
         <Image

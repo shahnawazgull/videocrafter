@@ -485,8 +485,7 @@
 }
 
 .video-js {
-  display: block;
-  vertical-align: top;
+  display: block; /* keep display block */
   box-sizing: border-box;
   color: #fff;
   background-color: #000;
@@ -499,6 +498,7 @@
   font-family: Arial, Helvetica, sans-serif;
   word-break: initial;
 }
+
 .video-js:-moz-full-screen {
   position: absolute;
 }
