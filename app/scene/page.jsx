@@ -400,10 +400,7 @@ export default function Home() {
                 rel="stylesheet"
                 href="https://vlsmlsaker.s3.amazonaws.com/sceneselection/style.css"
             />
-            <link
-                rel="stylesheet"
-                href="https://vlsmlsaker.s3.amazonaws.com/sceneselection/scene.css"
-            />
+       
             <link rel="stylesheet" href="/temp.css" />
             <link
                 href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"

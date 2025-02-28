@@ -53,7 +53,7 @@ export default function PopupModal({ selectedText, onClose, onSubmit }) {
                         <input
                             type="hidden"
                             name="csrfmiddlewaretoken"
-                            value="A5buGtEYdhFBwcSjly8DyqOl74FAQup1aN4GP3T3oXJ8TmIqNygPUvogqZ22B52d"
+                            value=""
                             readOnly
                         />
                         <div id="submit-cont">
