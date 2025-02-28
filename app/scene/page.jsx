@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Head from "next/head";
 import Script from "next/script";
 import "/styles/style.css";
@@ -10,6 +11,7 @@ import "/styles/add-scene-style.css";
 import Header from "@/components/Home/Header";
 import ProgressBar from "@/components/Home/ProgressBar";
 import Link from "next/link";
+import PopupModal from "@/components/PopupModal/PopupModal";
 
 export default function Home() {
     const [tutorialModalOpen, setTutorialModalOpen] = useState(false);
@@ -34,14 +36,32 @@ export default function Home() {
     const [popupOpen, setPopupOpen] = useState(false);
     const [selectedSlideId, setSelectedSlideId] = useState(null);
     const [selectedText, setSelectedText] = useState("");
+    const [activeSlideIds, setActiveSlideIds] = useState(new Set([1]));
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [dotCount, setDotCount] = useState(0); // State for dot animation
     const tableRef = useRef(null);
+    const router = useRouter();
 
     useEffect(() => {
         setIsMounted(true);
         if (tableRef.current) {
             tableRef.current.scrollIntoView({ behavior: "smooth" });
         }
+        const initialActiveIds = new Set(
+            slides.filter(slide => slide.isEditing).map(slide => slide.id)
+        );
+        setActiveSlideIds(initialActiveIds);
     }, []);
+
+    // Dot animation effect when processing
+    useEffect(() => {
+        if (isProcessing) {
+            const interval = setInterval(() => {
+                setDotCount((prev) => (prev + 1) % 4); // Cycle from 0 to 3
+            }, 500); // Update every 500ms
+            return () => clearInterval(interval); // Cleanup on unmount or when isProcessing changes
+        }
+    }, [isProcessing]);
 
     useEffect(() => {
         if (isMounted && typeof window !== "undefined" && window.$) {
@@ -54,15 +74,21 @@ export default function Home() {
                 forcePlaceholderSize: true,
                 tolerance: "pointer",
                 cursorAt: { top: 10 },
+                helper: function (e, tr) {
+                    const $original = tr.children();
+                    const $helper = tr.clone();
+                    $helper.children().each(function (index) {
+                        $(this).width($original.eq(index).width());
+                    });
+                    return $helper;
+                },
                 start: function (event, ui) {
-                    console.log("Drag started");
                     const scrollInterval = setInterval(() => {
                         autoScrollDuringDrag(ui.helper);
-                    }, 50);
+                    }, 20);
                     ui.item.data("scrollInterval", scrollInterval);
                 },
                 update: function (event, ui) {
-                    console.log("Drag ended, updating order");
                     const updatedSlides = Array.from(
                         $("#leadsTable tbody tr")
                     ).map((row, index) => {
@@ -73,12 +99,10 @@ export default function Home() {
                     setSlides(updatedSlides);
                 },
                 stop: function (event, ui) {
-                    console.log("Drag stopped");
                     clearInterval(ui.item.data("scrollInterval"));
                 },
             });
 
-            // Add placeholder styling
             $("<style>")
                 .prop("type", "text/css")
                 .html(`
@@ -87,8 +111,24 @@ export default function Home() {
                         border-left: 2px solid purple;
                         visibility: visible !important;
                         height: 50px;
-                        margin: 0;
-                        padding: 0;
+                    }
+                    td[data-tooltip]:hover::after {
+                        content: attr(data-tooltip);
+                        position: absolute;
+                        top: -30px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: #333;
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        white-space: nowrap;
+                        z-index: 1000;
+                    }
+                    .slide-last.active {
+                        background-color: rgb(211, 211, 211);
+                        border-radius: 4px;
                     }
                 `)
                 .appendTo("head");
@@ -145,6 +185,7 @@ export default function Home() {
             }));
             setSlides(newSlides);
             setSlideCount(newSlides.length);
+            setActiveSlideIds(new Set());
             if (tableRef.current) {
                 tableRef.current.scrollIntoView({ behavior: "smooth" });
             }
@@ -203,6 +244,7 @@ export default function Home() {
         };
         setSlides([...slides, newSlide]);
         setSlideCount(slideCount + 1);
+        setActiveSlideIds(prev => new Set(prev).add(newSlide.id));
     };
 
     const deleteSlide = (id) => {
@@ -214,6 +256,11 @@ export default function Home() {
             }));
         setSlides(updatedSlides);
         setSlideCount(updatedSlides.length);
+        setActiveSlideIds(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(id);
+            return newSet;
+        });
     };
 
     const handleTextSelection = (slideId) => {
@@ -241,6 +288,11 @@ export default function Home() {
                     : slide
             );
             setSlides(updatedSlides);
+            setActiveSlideIds(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(selectedSlideId);
+                return newSet;
+            });
         }
         setPopupOpen(false);
     };
@@ -252,6 +304,15 @@ export default function Home() {
                 : slide
         );
         setSlides(updatedSlides);
+        setActiveSlideIds(prev => {
+            const newSet = new Set(prev);
+            if (updatedSlides.find(slide => slide.id === slideId).isEditing) {
+                newSet.add(slideId);
+            } else {
+                newSet.delete(slideId);
+            }
+            return newSet;
+        });
     };
 
     const handleKeyPress = (e, slideId) => {
@@ -269,6 +330,11 @@ export default function Home() {
                     : slide
             );
             setSlides(updatedSlides);
+            setActiveSlideIds(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(slideId);
+                return newSet;
+            });
             textarea.blur();
         }
     };
@@ -286,32 +352,46 @@ export default function Home() {
                     : slide
             );
             setSlides(updatedSlides);
+            setActiveSlideIds(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(slideId);
+                return newSet;
+            });
         }
+    };
+
+    const handleProceed = () => {
+        setIsProcessing(true); // Start processing animation
+        setTimeout(() => {
+            router.push("/background-music"); // Navigate after 2 seconds
+        }, 2000);
     };
 
     return (
         <>
-            <Head>
-                <meta charSet="UTF-8" />
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1.0"
-                />
-                <title>VideoCrafter.io</title>
-                <link
-                    rel="stylesheet"
-                    href="https://vlsmlsaker.s3.amazonaws.com/css/style.css"
-                />
-                <link
-                    rel="stylesheet"
-                    href="https://vlsmlsaker.s3.amazonaws.com/sceneselection/style.css"
-                />
-                <link
-                    rel="stylesheet"
-                    href="https://vlsmlsaker.s3.amazonaws.com/sceneselection/scene.css"
-                />
-                <link rel="stylesheet" href="/temp.css" />
-            </Head>
+            <meta charSet="UTF-8" />
+            <meta
+                name="viewport"
+                content="width=device-width, initial-scale=1.0"
+            />
+            <title>VideoCrafter.io</title>
+            <link
+                rel="stylesheet"
+                href="https://vlsmlsaker.s3.amazonaws.com/css/style.css"
+            />
+            <link
+                rel="stylesheet"
+                href="https://vlsmlsaker.s3.amazonaws.com/sceneselection/style.css"
+            />
+            <link
+                rel="stylesheet"
+                href="https://vlsmlsaker.s3.amazonaws.com/sceneselection/scene.css"
+            />
+            <link rel="stylesheet" href="/temp.css" />
+            <link
+                href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"
+                rel="stylesheet"
+            />
             <Header />
             <ProgressBar />
             <div className="body-container">
@@ -321,7 +401,6 @@ export default function Home() {
                     className={isPfpDropdownOpen ? "present" : "not-present"}
                 ></div>
 
-                {/* Other sections (upload script, asset folder) remain unchanged */}
                 <div className="card-container">
                     <div className="card">
                         <div className="card-header">
@@ -479,7 +558,6 @@ export default function Home() {
                 </div>
 
                 <div className="grid-container2">
-                    {/* Instructions and Tips sections remain unchanged */}
                     <div className="section">
                         <div
                             className="section-header"
@@ -781,7 +859,12 @@ export default function Home() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="slide-last">
+                                    <td
+                                        className={`slide-last ${activeSlideIds.has(slide.id)
+                                            ? "active"
+                                            : ""
+                                            }`}
+                                    >
                                         <a
                                             href="#"
                                             className="above-del"
@@ -790,19 +873,25 @@ export default function Home() {
                                                 toggleEdit(slide.id);
                                             }}
                                         >
-                                            <img
-                                                src="/images/edit.svg"
-                                                alt="Edit"
+                                            <i
+                                                id="icon"
+                                                className="ri-edit-box-line fa-sync-alt icon"
                                                 style={{
-                                                    width: "1.5rem",
-                                                    height: "3rem",
+                                                    margin: "0 auto",
+                                                    fontSize: "20px",
+                                                    fontWeight: 600,
                                                     cursor: "pointer",
+                                                    verticalAlign: "middle",
                                                 }}
-
-                                            />
+                                            ></i>
                                         </a>
                                     </td>
-                                    <td className="slide-last">
+                                    <td
+                                        className={`slide-last ${activeSlideIds.has(slide.id)
+                                            ? "active"
+                                            : ""
+                                            }`}
+                                    >
                                         <a
                                             href="#"
                                             onClick={(e) => {
@@ -873,20 +962,21 @@ export default function Home() {
                     />
 
                     <div className="button-container">
-                        <a
-                            href="/background-music"
-                            style={{ textDecoration: "none" }}
+                        <button
+                            type="button"
+                            className={`button-container-btn ${isProcessing ? "processing" : ""}`}
+                            onClick={handleProceed}
+                            disabled={isProcessing}
                         >
-                            <button
-                                type="button"
-                                className="button-container-btn"
-                            >
-                                <span id="button-text">
-                                    Proceed To Background Music Selection
-                                </span>
+                            <span id="button-text">
+                                {isProcessing
+                                    ? `Processing${".".repeat(dotCount)}`
+                                    : "Proceed To Background Music Selection"}
+                            </span>
+                            {!isProcessing && (
                                 <img src="/images/arrow.svg" alt="Arrow" />
-                            </button>
-                        </a>
+                            )}
+                        </button>
                     </div>
                 </div>
 
@@ -924,251 +1014,5 @@ export default function Home() {
                 )}
             </div>
         </>
-    );
-}
-
-function PopupModal({ selectedText, onClose, onSubmit }) {
-    const [file, setFile] = useState(null);
-    const [topic, setTopic] = useState("");
-    const [videoClip, setVideoClip] = useState("");
-
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
-        document.getElementById("upload-text").textContent =
-            e.target.files[0]?.name || "Choose File";
-    };
-
-    const clearFileInput = () => {
-        setFile(null);
-        document.getElementById("upload-text").textContent = "Choose File";
-        document.getElementById("clear-file").style.display = "none";
-    };
-
-    const handleTopicChange = (e) => {
-        setTopic(e.target.value);
-        setVideoClip("");
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const shouldHighlight = file || (topic && videoClip);
-        onSubmit(shouldHighlight);
-    };
-
-    const handleClose = () => {
-        onClose();
-    };
-
-    return (
-        <div className="popup-form popup-modal" style={{ display: "flex" }}>
-            <div className="popup-container">
-                <div className="close-btnx close-btn">
-                    <button className="close-popup" onClick={handleClose}>
-                        X
-                    </button>
-                </div>
-                <div id="modal-cont">
-                    <form
-                        className="popup-content"
-                        onSubmit={handleSubmit}
-                        style={{
-                            gridTemplateColumns: "0.7fr 1fr",
-                            width: "100%",
-                        }}
-                    >
-                        <br />
-                        <input
-                            type="hidden"
-                            name="csrfmiddlewaretoken"
-                            value="A5buGtEYdhFBwcSjly8DyqOl74FAQup1aN4GP3T3oXJ8TmIqNygPUvogqZ22B52d"
-                            readOnly
-                        />
-                        <div id="submit-cont">
-                            <div className="form-group">
-                                <input
-                                    id="slide_text"
-                                    hidden
-                                    name="slide_text"
-                                    value={selectedText}
-                                    readOnly
-                                    className="form-input"
-                                />
-                            </div>
-                            <input
-                                id="clipId"
-                                type="number"
-                                hidden
-                                name="clipId"
-                                value="2298"
-                                readOnly
-                            />
-                            <input
-                                type="text"
-                                hidden
-                                id="remaining"
-                                name="remaining"
-                                value="starting with a tingling sensation in my back."
-                                readOnly
-                            />
-                            <div
-                                style={{
-                                    display: "grid",
-                                    gridTemplateColumns: "0.7fr 1fr",
-                                    borderRadius: "8px",
-                                    border: "1px solid #00000080",
-                                    overflow: "hidden",
-                                }}
-                                className="form-grid-cont"
-                            >
-                                <div className="grid-item title form-grid-item begin column-1">
-                                    <span
-                                        style={{
-                                            height: "50px",
-                                            alignItems: "center",
-                                        }}
-                                    >
-                                        Upload Scene
-                                    </span>
-                                </div>
-                                <div className="grid-item title form-grid-item end column-2">
-                                    <span
-                                        style={{
-                                            height: "50px",
-                                            alignItems: "center",
-                                            marginLeft: "-18px",
-                                        }}
-                                    >
-                                        Upload Scene From Assets Folder
-                                    </span>
-                                </div>
-                                <div className="form-grid-item main-item">
-                                    <div
-                                        className="form-group"
-                                        style={{ height: "100%" }}
-                                    >
-                                        <div className="upload-container">
-                                            <label
-                                                htmlFor="slide_file"
-                                                className="upload-label"
-                                            >
-                                                <img
-                                                    src="images/upload.svg"
-                                                    alt="" className="uploadSvg"
-                                                />
-                                                <span id="upload-text">
-                                                    Choose File
-                                                </span>
-                                            </label>
-                                            <i
-                                                id="clear-file"
-                                                style={{
-                                                    display: file
-                                                        ? "inline"
-                                                        : "none",
-                                                }}
-                                                onClick={clearFileInput}
-                                                className="ri-close-circle-line"
-                                            ></i>
-                                            <input
-                                                type="file"
-                                                id="slide_file"
-                                                name="slide_file"
-                                                className="upload-input"
-                                                accept="video/*"
-                                                onChange={handleFileChange}
-                                            />
-                                        </div>
-                                        <p id="currentFile">
-                                            {file?.name || ""}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div
-                                    style={{
-                                        borderLeft: "0.8px solid #864AF9",
-                                    }}
-                                    className="form-grid-item"
-                                >
-                                    <div className="form-group">
-                                        <select
-                                            id="selected_topic"
-                                            name="selected_topic"
-                                            className="form-select"
-                                            value={topic}
-                                            onChange={handleTopicChange}
-                                        >
-                                            <option value="">
-                                                Select Topic
-                                            </option>
-                                            <option value="17">
-                                                Male Thinking Clips
-                                            </option>
-                                            <option value="18">
-                                                Male Crying Clips
-                                            </option>
-                                            <option value="19">
-                                                Male Desperation Clips
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div className="form-group">
-                                        <select
-                                            id="videoSelect"
-                                            name="selected_video"
-                                            className="form-select"
-                                            value={videoClip}
-                                            onChange={(e) =>
-                                                setVideoClip(e.target.value)
-                                            }
-                                        >
-                                            <option value="" disabled>
-                                                Select A Video Clip
-                                            </option>
-                                            {topic && (
-                                                <>
-                                                    <option value="clip1">
-                                                        Clip 1
-                                                    </option>
-                                                    <option value="clip2">
-                                                        Clip 2
-                                                    </option>
-                                                </>
-                                            )}
-                                        </select>
-                                        <p
-                                            style={{
-                                                color: "red",
-                                                fontSize: "13px",
-                                            }}
-                                            id="error-slide"
-                                        ></p>
-                                    </div>
-                                    <input
-                                        type="number"
-                                        hidden
-                                        id="is_tiktok"
-                                        name="is_tiktok"
-                                        value="0"
-                                        readOnly
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        <div
-                            style={{ alignItems: "end" }}
-                            className="form-group"
-                        >
-                            <button
-                                type="submit"
-                                id="submit-clip"
-                                className="submit-btn"
-                            >
-                                Submit
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
     );
 }

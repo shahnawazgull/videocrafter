@@ -416,7 +416,7 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    width: 555px;
+    width: 543px;
     /* But don't exceed 555px */
     border-radius: 8px;
     box-sizing: border-box;
