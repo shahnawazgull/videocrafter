@@ -353,7 +353,7 @@ body {
 }
 
 .upload-label {
-    display: block;
+    display: flex;
     width: 100%;
     cursor: pointer;
     /* Ensure the label is clickable */

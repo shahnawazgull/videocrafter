@@ -12,6 +12,7 @@ import Header from "@/components/Home/Header";
 import ProgressBar from "@/components/Home/ProgressBar";
 import Link from "next/link";
 import PopupModal from "@/components/PopupModal/PopupModal";
+import LoadingAnimation from "@/components/Loading/LoadingAnimation";
 
 export default function Home() {
     const [tutorialModalOpen, setTutorialModalOpen] = useState(false);
@@ -38,7 +39,8 @@ export default function Home() {
     const [selectedText, setSelectedText] = useState("");
     const [activeSlideIds, setActiveSlideIds] = useState(new Set([1]));
     const [isProcessing, setIsProcessing] = useState(false);
-    const [dotCount, setDotCount] = useState(0); // State for dot animation
+    const [dotCount, setDotCount] = useState(0);
+    const [isLoading, setIsLoading] = useState(false); // New state for loading animation
     const tableRef = useRef(null);
     const router = useRouter();
 
@@ -53,15 +55,25 @@ export default function Home() {
         setActiveSlideIds(initialActiveIds);
     }, []);
 
-    // Dot animation effect when processing
+    // Dot animation for Processing button
     useEffect(() => {
         if (isProcessing) {
             const interval = setInterval(() => {
-                setDotCount((prev) => (prev + 1) % 4); // Cycle from 0 to 3
-            }, 500); // Update every 500ms
-            return () => clearInterval(interval); // Cleanup on unmount or when isProcessing changes
+                setDotCount((prev) => (prev + 1) % 4);
+            }, 500);
+            return () => clearInterval(interval);
         }
     }, [isProcessing]);
+
+    // Navigate after loading animation
+    useEffect(() => {
+        if (isLoading) {
+            const timeout = setTimeout(() => {
+                router.push("/background-music");
+            }, 3000); // Loading animation lasts 3 seconds
+            return () => clearTimeout(timeout);
+        }
+    }, [isLoading, router]);
 
     useEffect(() => {
         if (isMounted && typeof window !== "undefined" && window.$) {
@@ -128,7 +140,6 @@ export default function Home() {
                     }
                     .slide-last.active {
                         background-color: rgb(211, 211, 211);
-                        border-radius: 4px;
                     }
                 `)
                 .appendTo("head");
@@ -363,9 +374,15 @@ export default function Home() {
     const handleProceed = () => {
         setIsProcessing(true); // Start processing animation
         setTimeout(() => {
-            router.push("/background-music"); // Navigate after 2 seconds
-        }, 2000);
+            setIsProcessing(false); // End processing animation
+            setIsLoading(true); // Show loading animation
+        }, 2000); // Processing lasts 2 seconds
     };
+
+    // Render LoadingAnimation if isLoading is true, otherwise render main content
+    if (isLoading) {
+        return <LoadingAnimation />;
+    }
 
     return (
         <>
@@ -966,7 +983,7 @@ export default function Home() {
                             type="button"
                             className={`button-container-btn ${isProcessing ? "processing" : ""}`}
                             onClick={handleProceed}
-                            disabled={isProcessing}
+                            disabled={isProcessing || isLoading}
                         >
                             <span id="button-text">
                                 {isProcessing

@@ -368,7 +368,6 @@ body {
     text-align: center;
     gap: 14px;
     cursor: pointer;
-    /* Make the container clickable */
 }
 
 .upload-label {
@@ -376,7 +375,6 @@ body {
     align-items: center;
     width: 100%;
     cursor: pointer;
-    /* Ensure the label is clickable */
     text-align: center;
     font-size: 16px;
     font-weight: 380;
