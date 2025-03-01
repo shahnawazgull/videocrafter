@@ -12,7 +12,6 @@ import Header from "@/components/Home/Header";
 import ProgressBar from "@/components/Home/ProgressBar";
 import Link from "next/link";
 import PopupModal from "@/components/PopupModal/PopupModal";
-import LoadingAnimation from "@/components/Loading/LoadingAnimation";
 
 export default function Home() {
     const [tutorialModalOpen, setTutorialModalOpen] = useState(false);
@@ -40,7 +39,6 @@ export default function Home() {
     const [activeSlideIds, setActiveSlideIds] = useState(new Set([1]));
     const [isProcessing, setIsProcessing] = useState(false);
     const [dotCount, setDotCount] = useState(0);
-    const [isLoading, setIsLoading] = useState(false); // New state for loading animation
     const tableRef = useRef(null);
     const router = useRouter();
 
@@ -55,7 +53,6 @@ export default function Home() {
         setActiveSlideIds(initialActiveIds);
     }, []);
 
-    // Dot animation for Processing button
     useEffect(() => {
         if (isProcessing) {
             const interval = setInterval(() => {
@@ -64,16 +61,6 @@ export default function Home() {
             return () => clearInterval(interval);
         }
     }, [isProcessing]);
-
-    // Navigate after loading animation
-    useEffect(() => {
-        if (isLoading) {
-            const timeout = setTimeout(() => {
-                router.push("/background-music");
-            }, 3000); // Loading animation lasts 3 seconds
-            return () => clearTimeout(timeout);
-        }
-    }, [isLoading, router]);
 
     useEffect(() => {
         if (isMounted && typeof window !== "undefined" && window.$) {
@@ -186,16 +173,18 @@ export default function Home() {
         if (scriptFile) {
             const text = await scriptFile.text();
             const lines = text.split("\n").filter((line) => line.trim() !== "");
+            // Find the maximum existing ID to avoid duplicates
+            const maxId = slides.length > 0 ? Math.max(...slides.map(s => s.id)) : 0;
             const newSlides = lines.map((line, index) => ({
-                id: index + 1,
-                subtitle: `Subtitle ${index + 1}`,
+                id: maxId + index + 1, // Ensure unique IDs
+                subtitle: `Subtitle ${maxId + index + 1}`,
                 text: line.trim(),
                 markedText: line.trim(),
                 originalText: line.trim(),
                 isEditing: false,
             }));
             setSlides(newSlides);
-            setSlideCount(newSlides.length);
+            setSlideCount(maxId + lines.length); // Update slideCount to reflect the new max ID
             setActiveSlideIds(new Set());
             if (tableRef.current) {
                 tableRef.current.scrollIntoView({ behavior: "smooth" });
@@ -245,16 +234,18 @@ export default function Home() {
 
     const addSlide = (e) => {
         e.preventDefault();
+        // Find the maximum existing ID
+        const maxId = slides.length > 0 ? Math.max(...slides.map(s => s.id)) : 0;
         const newSlide = {
-            id: slideCount + 1,
-            subtitle: `Subtitle ${slideCount + 1}`,
+            id: maxId + 1, // Ensure a unique ID
+            subtitle: `Subtitle ${maxId + 1}`,
             text: "",
             markedText: "",
             originalText: "",
             isEditing: true,
         };
         setSlides([...slides, newSlide]);
-        setSlideCount(slideCount + 1);
+        setSlideCount(maxId + 1); // Update slideCount to the new max ID
         setActiveSlideIds(prev => new Set(prev).add(newSlide.id));
     };
 
@@ -266,7 +257,7 @@ export default function Home() {
                 subtitle: `Subtitle ${index + 1}`,
             }));
         setSlides(updatedSlides);
-        setSlideCount(updatedSlides.length);
+        setSlideCount(updatedSlides.length > 0 ? Math.max(...updatedSlides.map(s => s.id)) : 0);
         setActiveSlideIds(prev => {
             const newSet = new Set(prev);
             newSet.delete(id);
@@ -374,14 +365,10 @@ export default function Home() {
     const handleProceed = () => {
         setIsProcessing(true);
         setTimeout(() => {
-            setIsProcessing(false); 
-            setIsLoading(true); 
-        }, 2000); 
+            setIsProcessing(false);
+            window.location.href = "/background-music";
+        }, 2000);
     };
-
-    if (isLoading) {
-        return <LoadingAnimation />;
-    }
 
     return (
         <>
@@ -399,7 +386,6 @@ export default function Home() {
                 rel="stylesheet"
                 href="https://vlsmlsaker.s3.amazonaws.com/sceneselection/style.css"
             />
-       
             <link rel="stylesheet" href="/temp.css" />
             <link
                 href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"
@@ -979,7 +965,7 @@ export default function Home() {
                             type="button"
                             className={`button-container-btn ${isProcessing ? "processing" : ""}`}
                             onClick={handleProceed}
-                            disabled={isProcessing || isLoading}
+                            disabled={isProcessing}
                         >
                             <span id="button-text">
                                 {isProcessing
@@ -1017,10 +1003,6 @@ export default function Home() {
                         />
                         <Script
                             src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
-                            strategy="afterInteractive"
-                        />
-                        <Script
-                            src="https://vlsmlsaker.s3.amazonaws.com/add_scene/script.js"
                             strategy="afterInteractive"
                         />
                     </>

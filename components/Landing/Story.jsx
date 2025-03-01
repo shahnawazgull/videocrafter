@@ -24,7 +24,6 @@ const VideoPlayer = dynamic(() => import('video.js').then((videojs) => {
             fluid: true,
             controls: true,
             preload: 'auto',
-            muted: true, // Start muted to allow autoplay
             playsInline: true,
           });
 
@@ -65,7 +64,6 @@ const VideoPlayer = dynamic(() => import('video.js').then((videojs) => {
           width="100%"
           poster={poster}
           playsInline
-          muted // Initial mute for autoplay compatibility
         >
           <source src={src} type="video/mp4" />
         </video>
@@ -164,7 +162,7 @@ const Story = () => {
           <div className="grid-container">
             {videoData.tiktok.map((video, idx) => (
               <div className="grid-item" key={idx}>
-                <video src={video.src} className="tiktok-video" controls playsInline muted />
+                <video src={video.src} className="tiktok-video" controls playsInline/>
               </div>
             ))}
           </div>
@@ -173,7 +171,7 @@ const Story = () => {
           <div className="grid-container">
             {videoData.facebook.map((video, idx) => (
               <div className="grid-item" key={idx}>
-                <video src={video.src} className="facebook-video" controls playsInline muted />
+                <video src={video.src} className="facebook-video" controls playsInline/>
               </div>
             ))}
           </div>
@@ -182,7 +180,7 @@ const Story = () => {
           <div className="grid-container">
             {videoData.youtube.map((video, idx) => (
               <div className="grid-item" key={idx}>
-                <video src={video.src} className="youtube-video" controls playsInline muted />
+                <video src={video.src} className="youtube-video" controls playsInline/>
               </div>
             ))}
           </div>

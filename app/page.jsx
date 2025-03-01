@@ -23,12 +23,12 @@ const Page = () => {
       <Background/>
       <Header />
       <Banner/>
-      {/* <Placeholder/> */}
+      <Placeholder/>
       <Built/>
       <Story/>
-      {/* <Work/> */}
+      <Work/>
       <Beats/>
-      {/* <Tutorial/> */}
+      <Tutorial/>
       <Plans/>
       <Free/>
       <Commissions/>
