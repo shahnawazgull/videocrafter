@@ -372,14 +372,13 @@ export default function Home() {
     };
 
     const handleProceed = () => {
-        setIsProcessing(true); // Start processing animation
+        setIsProcessing(true);
         setTimeout(() => {
-            setIsProcessing(false); // End processing animation
-            setIsLoading(true); // Show loading animation
-        }, 2000); // Processing lasts 2 seconds
+            setIsProcessing(false); 
+            setIsLoading(true); 
+        }, 2000); 
     };
 
-    // Render LoadingAnimation if isLoading is true, otherwise render main content
     if (isLoading) {
         return <LoadingAnimation />;
     }

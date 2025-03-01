@@ -1,20 +1,16 @@
 import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-
+import '/styles/landing.css'
+import '/styles/landing_style.css'
+import '/styles/landing-bck.css'
+import '/styles/landing_style-bck.css'
 const Work = () => {
   return (
     <div>
-       
-        <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
-          integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
-          crossOrigin="anonymous"
-          referrerPolicy="no-referrer"
-        />
-        <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
-       
+
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
+
       <div className="howitworks" id="HowItWorks">
         {/* Static images */}
         <Image

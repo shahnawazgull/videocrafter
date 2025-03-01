@@ -1,5 +1,8 @@
 import React from 'react'
-
+import '/styles/landing.css'
+import '/styles/landing_style.css'
+import '/styles/landing-bck.css'
+import '/styles/landing_style-bck.css'
 const Beats = () => {
   return (
     <div>

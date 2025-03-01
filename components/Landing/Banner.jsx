@@ -1,6 +1,9 @@
 import React from 'react';
 import Link from 'next/link'; // Import Link for client-side navigation
-
+import '/styles/landing.css'
+import '/styles/landing_style.css'
+import '/styles/landing-bck.css'
+import '/styles/landing_style-bck.css'
 const Banner = () => {
   return (
     <div>

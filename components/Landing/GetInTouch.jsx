@@ -1,7 +1,10 @@
 "use client"
 import React from 'react';
 import Head from 'next/head';
-
+import '/styles/landing.css'
+import '/styles/landing_style.css'
+import '/styles/landing-bck.css'
+import '/styles/landing_style-bck.css'
 const GetInTouch = () => {
   // Handle form submission
   const handleSubmit = (e) => {
@@ -12,12 +15,6 @@ const GetInTouch = () => {
 
   return (
     <div>
-      <Head>
-        {/* Add any necessary meta tags, stylesheets, or scripts here */}
-        <title>Contact Us - VideoCrafter</title>
-        <meta name="description" content="Get in touch with us. We’d love to hear from you. Please fill out this form." />
-      </Head>
-
       <div className="contact-section-wrapper" id="contact">
         <div className="contact-section">
           <h1>Contact Us</h1>

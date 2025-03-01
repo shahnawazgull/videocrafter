@@ -31,13 +31,13 @@ const Page = () => {
                     <form onSubmit={handleSubmit} method="post" className="password-reset_form">
                         <div className="password-reset_logo">
                             <div>
-                                <Link href='/'>
+                                <a href='/'>
                                     <img
                                         src="/images/logo.svg"
                                         alt="Company logo"
                                         className="signup_logoSvg"
                                     />
-                                </Link>
+                                </a>
                             </div>
                         </div>
                         <div className="password-reset_form">

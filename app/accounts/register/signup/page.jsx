@@ -40,13 +40,13 @@ const Page = () => {
           <form onSubmit={handleSubmit} className="signup_form">
             <div className="signup_logo">
               <div>
-              <Link href='/'>
+              <a href='/'>
                 <img 
                   src="/images/logo.svg" 
                   alt="Company logo" 
                   className="signup_logoSvg"
                 />
-                </Link>
+                </a>
               </div>
               <span className="signup_logoText">Get Started</span>
               <small className="small">Set Up Your Account Details Below</small>

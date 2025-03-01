@@ -28,7 +28,9 @@ const Page = () => {
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.logo}>
                         <div>
+                            <a href='/'>
                             <img src="/images/logo.svg" alt="Logo" />
+                            </a>
                         </div>
                         <span className={styles.span}>Sign In</span>
                     </div>

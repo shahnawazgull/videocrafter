@@ -31,13 +31,13 @@ const Page = () => {
                     >
                         <div className="password-reset_logo">
                             <div>
-                                <Link href="/">
+                                <a href="/">
                                     <img
                                         src="/images/logo.svg"
                                         alt="Company logo"
                                         className="signup_logoSvg"
                                     />
-                                </Link>
+                                </a>
                             </div>
                             <span className="password-reset_logoText">
                                 Password Reset Sent

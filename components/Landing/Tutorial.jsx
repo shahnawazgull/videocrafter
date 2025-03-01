@@ -1,15 +1,12 @@
 import React from 'react';
 import Head from 'next/head';
-
+import '/styles/landing.css'
+import '/styles/landing_style.css'
+import '/styles/landing-bck.css'
+import '/styles/landing_style-bck.css'
 const Tutorial = () => {
   return (
     <div>
-      <Head>
-        {/* Add any necessary meta tags, stylesheets, or scripts here */}
-        <title>VideoCrafter Tutorial</title>
-        <meta name="description" content="Learn how to use VideoCrafter.io to create high-converting video sales letters with ease." />
-      </Head>
-
       <div className="tutorial-container" style={{ height: 'auto' }}>
         <h1 className="tutorial-title">
           <span className="title-bold">VideoCrafter</span>
