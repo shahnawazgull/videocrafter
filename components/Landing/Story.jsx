@@ -1,131 +1,24 @@
-'use client';
-
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import dynamic from 'next/dynamic';
-import 'video.js/dist/video-js.css';
+"use client"
+import React, { useState, useRef } from 'react';
+import '/styles/video-js.css';
 import '/styles/landing.css';
 import '/styles/landing_style.css';
 import '/styles/landing-bck.css';
 import '/styles/landing_style-bck.css';
+import '/styles/videos.css';
 
-// Load Video.js dynamically
-const VideoPlayer = dynamic(() => import('video.js').then((videojs) => {
-  const VideoComponent = ({ className, src, poster, isActive, onUserInteraction }) => {
-    const videoRef = useRef(null);
-    const playerRef = useRef(null);
-    const [isUserActive, setIsUserActive] = useState(false);
-
-    useEffect(() => {
-      if (!videoRef.current) return;
-
-      const initializePlayer = () => {
-        if (!playerRef.current) {
-          playerRef.current = videojs.default(videoRef.current, {
-            fluid: true,
-            controls: true,
-            preload: 'auto',
-            playsInline: true,
-          });
-
-          const handleFirstPlay = () => {
-            setIsUserActive(true);
-            onUserInteraction();
-            videoRef.current.removeEventListener('play', handleFirstPlay);
-          };
-          videoRef.current.addEventListener('play', handleFirstPlay);
-        }
-      };
-
-      if (isActive) {
-        initializePlayer();
-        if (isUserActive) {
-          videoRef.current.play().catch(err => console.log('Autoplay prevented:', err));
-        }
-      } else if (playerRef.current) {
-        videoRef.current.pause();
-      }
-
-      return () => {
-        if (playerRef.current && !isActive) {
-          playerRef.current.dispose();
-          playerRef.current = null;
-        }
-      };
-    }, [isActive, src, isUserActive, onUserInteraction]);
-
-    return (
-      <div style={{ width: '100%', maxWidth: '500px', minHeight: '200px' }}>
-        <video
-          ref={videoRef}
-          className={`video-js vjs-default-skin vjs-big-play-centered ${className}-video`}
-          controls
-          preload="auto"
-          style={{ width: '100%' }}
-          poster={poster}
-          playsInline
-        >
-          <source src={src} type="video/mp4" />
-        </video>
-      </div>
-    );
-  };
-  return VideoComponent;
-}), {
-  ssr: false,
-  loading: () => <div>Loading video...</div>,
-});
-
-const Slider = React.memo(({ title, videos, currentIndex, setIndex, className }) => {
-  const handleNext = useCallback(() => {
-    setIndex((prev) => (prev + 1) % videos.length);
-  }, [setIndex, videos.length]);
-
-  const handlePrev = useCallback(() => {
-    setIndex((prev) => (prev - 1 + videos.length) % videos.length);
-  }, [setIndex, videos.length]);
-
-  const [hasInteracted, setHasInteracted] = useState(false);
-
-  const handleUserInteraction = useCallback(() => {
-    setHasInteracted(true);
-  }, []);
-
-  return (
-    <div className={`mobi-slider ${className}`}>
-      <h2 className="subtitle mobile-sub-head">{title}</h2>
-      <div className="slider">
-        <button className="prev" onClick={handlePrev}>&lt;</button>
-        <div className="slides" style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
-          {videos.map((video, idx) => (
-            <div className="slide" key={idx}>
-              <div className="Placeholder-mob">
-                <VideoPlayer
-                  className={className}
-                  src={video.src}
-                  poster={video.poster}
-                  isActive={currentIndex === idx}
-                  onUserInteraction={handleUserInteraction}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
-        <button className="next" onClick={handleNext}>&gt;</button>
-        <div className="slider-dots">
-          {videos.map((_, idx) => (
-            <span key={idx} className={`dot ${currentIndex === idx ? 'active' : ''}`} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-});
-
-const Story = () => {
+const VideoSlider = () => {
+  // State for each slider's current index
   const [tiktokIndex, setTiktokIndex] = useState(0);
   const [facebookIndex, setFacebookIndex] = useState(0);
   const [youtubeIndex, setYoutubeIndex] = useState(0);
 
+  // Refs for swipe handling
+  const tiktokRef = useRef(null);
+  const facebookRef = useRef(null);
+  const youtubeRef = useRef(null);
+
+  // Video data
   const videoData = {
     tiktok: [
       { src: 'videos/tiktok/tiktok1.mp4', poster: 'images/tiktok-poster.png' },
@@ -144,70 +37,250 @@ const Story = () => {
     ],
   };
 
+  // Navigation handlers
+  const handleNext = (setIndex, maxLength) => {
+    setIndex((prev) => (prev + 1) % maxLength);
+  };
+
+  const handlePrev = (setIndex, maxLength) => {
+    setIndex((prev) => (prev - 1 + maxLength) % maxLength);
+  };
+
+  // Swipe handlers
+  const handleSwipe = (e, setIndex, maxLength, ref) => {
+    const startX = e.type === 'touchstart' ? e.touches[0].clientX : null;
+    let moveX = null;
+
+    const onMove = (moveEvent) => {
+      if (moveEvent.touches) {
+        moveX = moveEvent.touches[0].clientX;
+      }
+    };
+
+    const onEnd = () => {
+      if (startX && moveX) {
+        const distance = startX - moveX;
+        const threshold = 50;
+        if (distance > threshold) {
+          handleNext(setIndex, maxLength); // Swipe left
+        } else if (distance < -threshold) {
+          handlePrev(setIndex, maxLength); // Swipe right
+        }
+      }
+      ref.current.removeEventListener('touchmove', onMove);
+      ref.current.removeEventListener('touchend', onEnd);
+    };
+
+    if (e.type === 'touchstart') {
+      ref.current.addEventListener('touchmove', onMove);
+      ref.current.addEventListener('touchend', onEnd);
+    }
+  };
+
   return (
-    <div>
-      <div className="portfolio" id="Portfolio">
-        <div className="portfoliotext">
-          <h2>
-            See What <br />
-            <span className="highlight">VideoCrafter.io</span> Has Done
-          </h2>
+    <div className="video-slider">
+      {/* Header */}
+      <div className="portfolio-header">
+        <h2>
+          See What <br />
+          <span className="highlight">VideoCrafter.io</span> Has Done
+        </h2>
+      </div>
+
+      {/* Desktop Grid Layout */}
+      <div className="video-grid">
+        {/* TikTok Videos */}
+        <h3 className="grid-title">TikTok Ad Examples</h3>
+        <div className="grid-container">
+          {videoData.tiktok.map((video, idx) => (
+            <div className="grid-video" key={idx}>
+              <video
+                src={video.src}
+                style={{ width: '100%' }}
+                poster={video.poster}
+                controls
+                muted
+                playsInline
+              />
+            </div>
+          ))}
         </div>
 
-        {/* Desktop Grid Layout */}
-        <div className="grid">
-          <h2 className="subtitle">TikTok Ad Examples</h2>
-          <div className="grid-container">
+        {/* Facebook Videos */}
+        <h3 className="grid-title">Facebook/Instagram Ad Examples</h3>
+        <div className="grid-container">
+          {videoData.facebook.map((video, idx) => (
+            <div className="grid-video" key={idx}>
+              <video
+                src={video.src}
+                style={{ width: '100%' }}
+                poster={video.poster}
+                controls
+                muted
+                playsInline
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* YouTube Videos */}
+        <h3 className="grid-title">YouTube Ad Examples</h3>
+        <div className="grid-container">
+          {videoData.youtube.map((video, idx) => (
+            <div className="grid-video" key={idx}>
+              <video
+                src={video.src}
+                style={{ width: '100%' }}
+                poster={video.poster}
+                controls
+                muted
+                playsInline
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile Sliders */}
+      {/* TikTok Slider */}
+      <div className="mobile-slider tiktok">
+        <h3 className="slider-title">TikTok Ad Examples</h3>
+        <div
+          className="slider-wrapper"
+          ref={tiktokRef}
+          onTouchStart={(e) => handleSwipe(e, setTiktokIndex, videoData.tiktok.length, tiktokRef)}
+        >
+          <button
+            className="slider-btn prev"
+            onClick={() => handlePrev(setTiktokIndex, videoData.tiktok.length)}
+          >
+            &lt;
+          </button>
+          <div className="slider-videos" style={{ transform: `translateX(-${tiktokIndex * 100}%)` }}>
             {videoData.tiktok.map((video, idx) => (
-              <div className="grid-item" key={idx}>
+              <div className="slider-video" key={idx}>
                 <video
                   src={video.src}
                   style={{ width: '100%' }}
                   poster={video.poster}
                   controls
-                  className="tiktok-video"
+                  muted
+                  playsInline
                 />
               </div>
             ))}
           </div>
-
-          <h2 className="subtitle">Facebook/Instagram Ad Examples</h2>
-          <div className="grid-container">
-            {videoData.facebook.map((video, idx) => (
-              <div className="grid-item" key={idx}>
-                <video
-                  src={video.src}
-                  style={{ width: '100%' }}
-                  poster={video.poster}
-                  controls
-                  className="facebook-video"
-                />
-              </div>
-            ))}
-          </div>
-
-          <h2 className="subtitle">YouTube Ad Examples</h2>
-          <div className="grid-container">
-            {videoData.youtube.map((video, idx) => (
-              <div className="grid-item" key={idx}>
-                <video
-                  src={video.src}
-                  style={{ width: '100%' }}
-                  poster={video.poster}
-                  controls
-                  className="youtube-video"
-                />
-              </div>
-            ))}
-          </div>
+          <button
+            className="slider-btn next"
+            onClick={() => handleNext(setTiktokIndex, videoData.tiktok.length)}
+          >
+            &gt;
+          </button>
         </div>
+        <div className="slider-dots">
+          {videoData.tiktok.map((_, idx) => (
+            <span
+              key={idx}
+              className={`dot ${tiktokIndex === idx ? 'active' : ''}`}
+              onClick={() => setTiktokIndex(idx)}
+            />
+          ))}
+        </div>
+      </div>
 
-        <Slider title="TikTok Ad Examples" videos={videoData.tiktok} currentIndex={tiktokIndex} setIndex={setTiktokIndex} className="tiktok" />
-        <Slider title="Facebook Ad Examples" videos={videoData.facebook} currentIndex={facebookIndex} setIndex={setFacebookIndex} className="facebook" />
-        <Slider title="YouTube Ad Examples" videos={videoData.youtube} currentIndex={youtubeIndex} setIndex={setYoutubeIndex} className="youtube" />
+      {/* Facebook Slider */}
+      <div className="mobile-slider facebook">
+        <h3 className="slider-title">Facebook/Instagram Ad Examples</h3>
+        <div
+          className="slider-wrapper"
+          ref={facebookRef}
+          onTouchStart={(e) => handleSwipe(e, setFacebookIndex, videoData.facebook.length, facebookRef)}
+        >
+          <button
+            className="slider-btn prev"
+            onClick={() => handlePrev(setFacebookIndex, videoData.facebook.length)}
+          >
+            &lt;
+          </button>
+          <div className="slider-videos" style={{ transform: `translateX(-${facebookIndex * 100}%)` }}>
+            {videoData.facebook.map((video, idx) => (
+              <div className="slider-video" key={idx}>
+                <video
+                  src={video.src}
+                  style={{ width: '100%' }}
+                  poster={video.poster}
+                  controls
+                  muted
+                  playsInline
+                />
+              </div>
+            ))}
+          </div>
+          <button
+            className="slider-btn next"
+            onClick={() => handleNext(setFacebookIndex, videoData.facebook.length)}
+          >
+            &gt;
+          </button>
+        </div>
+        <div className="slider-dots">
+          {videoData.facebook.map((_, idx) => (
+            <span
+              key={idx}
+              className={`dot ${facebookIndex === idx ? 'active' : ''}`}
+              onClick={() => setFacebookIndex(idx)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* YouTube Slider */}
+      <div className="mobile-slider youtube">
+        <h3 className="slider-title">YouTube Ad Examples</h3>
+        <div
+          className="slider-wrapper"
+          ref={youtubeRef}
+          onTouchStart={(e) => handleSwipe(e, setYoutubeIndex, videoData.youtube.length, youtubeRef)}
+        >
+          <button
+            className="slider-btn prev"
+            onClick={() => handlePrev(setYoutubeIndex, videoData.youtube.length)}
+          >
+            &lt;
+          </button>
+          <div className="slider-videos" style={{ transform: `translateX(-${youtubeIndex * 100}%)` }}>
+            {videoData.youtube.map((video, idx) => (
+              <div className="slider-video" key={idx}>
+                <video
+                  src={video.src}
+                  style={{ width: '100%' }}
+                  poster={video.poster}
+                  controls
+                  muted
+                  playsInline
+                />
+              </div>
+            ))}
+          </div>
+          <button
+            className="slider-btn next"
+            onClick={() => handleNext(setYoutubeIndex, videoData.youtube.length)}
+          >
+            &gt;
+          </button>
+        </div>
+        <div className="slider-dots">
+          {videoData.youtube.map((_, idx) => (
+            <span
+              key={idx}
+              className={`dot ${youtubeIndex === idx ? 'active' : ''}`}
+              onClick={() => setYoutubeIndex(idx)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
 };
 
-export default Story;
+export default VideoSlider;
