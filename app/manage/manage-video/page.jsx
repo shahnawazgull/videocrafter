@@ -109,7 +109,7 @@ const Page = () => {
                                         >
                                             <img
                                                 src="/images/delete-icn.svg" // Corrected icon to match "Delete"
-                                                alt="Delete Icon"
+                                                alt="Delete Icon" style={{width:'20px'}}
                                             />
                                             Delete
                                         </a>

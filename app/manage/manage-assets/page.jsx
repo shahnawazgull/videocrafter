@@ -175,8 +175,8 @@ const Page = () => {
                                             className="rename-folder-link link-tag"
                                         >
                                             <img
-                                                src="https://img.icons8.com/?size=22&id=114093&format=png&color=000000"
-                                                alt="Rename Icon"
+                                                src="/images/edit-btn.svg"
+                                                alt="Rename Icon" style={{width:'20px'}}
                                             />
                                             
                                             Rename
@@ -186,6 +186,7 @@ const Page = () => {
                                         <a
                                             href="/video/categories/delete/36/"
                                             className="delete-folder-link link-tag"
+                                            style={{width:'20px'}}
                                         >
                                             <img
                                                 src="/images/delete-icn.svg"
