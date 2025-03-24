@@ -175,9 +175,10 @@ const Page = () => {
                                             className="rename-folder-link link-tag"
                                         >
                                             <img
-                                                src="https://vlsmlsaker.s3.amazonaws.com/resources/assets/assets1/rename.svg"
+                                                src="https://img.icons8.com/?size=22&id=114093&format=png&color=000000"
                                                 alt="Rename Icon"
                                             />
+                                            
                                             Rename
                                         </a>
                                     </div>

@@ -108,7 +108,7 @@ const Page = () => {
                                             className="link-tag"
                                         >
                                             <img
-                                                src="https://vlsmlsaker.s3.amazonaws.com/resources/assets/assets1/delete.svg" // Corrected icon to match "Delete"
+                                                src="/images/delete-icn.svg" // Corrected icon to match "Delete"
                                                 alt="Delete Icon"
                                             />
                                             Delete
