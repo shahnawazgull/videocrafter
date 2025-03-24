@@ -417,7 +417,7 @@ export default function Home() {
                                         ?
                                     </div>
                                 </div>
-                                <a href="/text/media/logos/VideoCrafter.txt/" download="" className="download-btn">
+                                <a href="/dummy/template.txt/" download="" className="download-btn">
                                     Click Here To Download An Empty Template
                                 </a>
                             </div>
