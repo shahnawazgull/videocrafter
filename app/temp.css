@@ -1011,7 +1011,14 @@ header a {
     cursor: pointer;
     border: none;
 }
-
+#subtitleBorderRadiusValue{
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 21.94px;
+    letter-spacing: 0.02em;
+    text-align: left;
+    color: #000000B2;
+}
 .Preview {
     width: 100%;
     margin-bottom: 28px;
