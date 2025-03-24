@@ -1,53 +1,30 @@
 import React from 'react';
 import Head from 'next/head';
 import Image from 'next/image';
-import '/styles/landing.css'
-import '/styles/landing_style.css'
-import '/styles/landing-bck.css'
-import '/styles/landing_style-bck.css'
+import '/styles/landing.css';
+import '/styles/landing_style.css';
+import '/styles/landing-bck.css';
+import '/styles/landing_style-bck.css';
+
 const Work = () => {
   return (
     <div>
-
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossOrigin="anonymous" referrerPolicy="no-referrer" />
+      {/* Font Awesome CDN for icons */}
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossOrigin="anonymous"
+        referrerPolicy="no-referrer"
+      />
 
       <div className="howitworks" id="HowItWorks">
-        {/* Static images */}
-        <Image
-          src="images/elipse.svg"
-          alt=""
-          width={100}
-          height={100}
-          className=""
-        />
-        <Image
-          src="images/elipse.svg"
-          alt=""
-          width={100}
-          height={100}
-          className=""
-        />
-        <Image
-          src="images/elipse.svg"
-          alt=""
-          width={100}
-          height={100}
-          className=""
-        />
-        <Image
-          src="images/elipse.svg"
-          alt=""
-          width={100}
-          height={100}
-          className=""
-        />
-        <Image
-          src="images/elipse.svg"
-          alt=""
-          width={100}
-          height={100}
-          className=""
-        />
+        {/* Static background images */}
+        <Image src="/images/elipse.svg" alt="" width={100} height={100} className="" />
+        <Image src="/images/elipse.svg" alt="" width={100} height={100} className="" />
+        <Image src="/images/elipse.svg" alt="" width={100} height={100} className="" />
+        <Image src="/images/elipse.svg" alt="" width={100} height={100} className="" />
+        <Image src="/images/elipse.svg" alt="" width={100} height={100} className="" />
 
         {/* Heading */}
         <div className="hiw-heading-text">
@@ -74,16 +51,11 @@ const Work = () => {
             </div>
             <div className="hiw-element-placeholder">
               <video
-                id="step-video-1"
-                className="video-js vjs-default-skin vjs-big-play-centered"
+                src='videos/dummy.mp4'
+                style={{ width: '100%' }}
+                poster='images/poster.jpg'
                 controls
-                preload="auto"
-                data-setup='{ "fluid" : true }'
-                width="100%"
-                poster="images/poster.jpg"
-              >
-                <source src="videos/dummy.mp4" type="video/mp4" />
-              </video>
+              />
             </div>
             <div className="sep-border"></div>
           </div>
@@ -94,22 +66,16 @@ const Work = () => {
               <div className="hiw-element-heading">2. Add AI Voiceover:</div>
               <div className="hiw-element-text">
                 <i className="fa-solid fa-check" style={{ marginRight: '10px' }}></i>
-                Paste your API key and voice ID, and let AI create realistic, human-like voiceovers—no robotic
-                tones here.
+                Paste your API key and voice ID, and let AI create realistic, human-like voiceovers—no robotic tones here.
               </div>
             </div>
             <div className="hiw-element-placeholder">
               <video
-                id="step-video-2"
-                className="video-js vjs-default-skin vjs-big-play-centered"
+                src='videos/dummy.mp4'
+                style={{ width: '100%' }}
+                poster='images/poster.jpg'
                 controls
-                preload="auto"
-                data-setup='{ "fluid" : true }'
-                width="100%"
-                poster="images/poster.jpg"
-              >
-                <source src="videos/dummy.mp4" type="video/mp4" />
-              </video>
+              />
             </div>
             <div className="sep-border"></div>
           </div>
@@ -125,16 +91,11 @@ const Work = () => {
             </div>
             <div className="hiw-element-placeholder">
               <video
-                id="step-video-3"
-                className="video-js vjs-default-skin vjs-big-play-centered"
+                src='videos/dummy.mp4'
+                style={{ width: '100%' }}
+                poster='images/poster.jpg'
                 controls
-                preload="auto"
-                data-setup='{ "fluid" : true }'
-                width="100%"
-                poster="images/poster.jpg"
-              >
-                <source src="videos/dummy.mp4" type="video/mp4" />
-              </video>
+              />
             </div>
             <div className="sep-border"></div>
           </div>
@@ -150,16 +111,11 @@ const Work = () => {
             </div>
             <div className="hiw-element-placeholder">
               <video
-                id="step-video-4"
-                className="video-js vjs-default-skin vjs-big-play-centered"
+                src='videos/dummy.mp4'
+                style={{ width: '100%' }}
+                poster='images/poster.jpg'
                 controls
-                preload="auto"
-                data-setup='{ "fluid" : true }'
-                width="100%"
-                poster="images/poster.jpg"
-              >
-                <source src="videos/dummy.mp4" type="video/mp4" />
-              </video>
+              />
             </div>
             <div className="sep-border"></div>
           </div>
@@ -175,16 +131,11 @@ const Work = () => {
             </div>
             <div className="hiw-element-placeholder">
               <video
-                id="step-video-5"
-                className="video-js vjs-default-skin vjs-big-play-centered"
+                src='videos/dummy.mp4'
+                style={{ width: '100%' }}
+                poster='images/poster.jpg'
                 controls
-                preload="auto"
-                data-setup='{ "fluid" : true }'
-                width="100%"
-                poster="images/poster.jpg"
-              >
-                <source src="videos/dummy.mp4" type="video/mp4" />
-              </video>
+              />
             </div>
             <div className="sep-border"></div>
           </div>
@@ -200,16 +151,11 @@ const Work = () => {
             </div>
             <div className="hiw-element-placeholder">
               <video
-                id="step-video-6"
-                className="video-js vjs-default-skin vjs-big-play-centered"
+                src='videos/dummy.mp4'
+                style={{ width: '100%' }}
+                poster='images/poster.jpg'
                 controls
-                preload="auto"
-                data-setup='{ "fluid" : true }'
-                width="100%"
-                poster="images/poster.jpg"
-              >
-                <source src="videos/dummy.mp4" type="video/mp4" />
-              </video>
+              />
             </div>
           </div>
         </div>

@@ -16,19 +16,13 @@ const Tutorial = () => {
           In This Tutorial, We'll Walk You Through How To Use VideoCrafter.Io To Create
           High-Converting Video Sales Letters With Ease.
         </p>
-        <div className="video-placeholder">
+        <div className='placeholder'>
           <video
-            id="tutorial-video"
-            className="video-js vjs-default-skin vjs-big-play-centered"
+            src='videos/dummy.mp4'
+            style={{ width: '100%' }}
+            poster='images/poster.jpg'
             controls
-            preload="auto"
-            data-setup='{ "fluid" : true }'
-            width="100%"
-            poster="images/poster.jpg"
-          >
-            <source src="videos/dummy.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          />
         </div>
       </div>
     </div>

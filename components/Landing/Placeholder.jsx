@@ -4,24 +4,17 @@ import '/styles/landing.css'
 import '/styles/landing_style.css'
 import '/styles/landing-bck.css'
 import '/styles/landing_style-bck.css'
+import '/styles/videos.css'
 const Placeholder = () => {
   return (
     <div>
-      <div className="PlaceholderContainer">
-        <div className="intro-container">
+      <div className='placeholder'>
         <video
-            id="tutorial-video"
-            className="video-js vjs-default-skin vjs-big-play-centered"
-            controls
-            preload="auto"
-            data-setup='{ "fluid" : true }'
-            width="100%"
-            poster="images/poster.jpg"
-          >
-            <source src="videos/dummy.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
+          src='videos/dummy.mp4'
+          style={{ width: '100%' }}
+          poster='images/poster.jpg'
+          controls
+        />
       </div>
     </div>
   )

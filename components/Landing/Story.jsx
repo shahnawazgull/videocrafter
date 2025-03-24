@@ -27,7 +27,6 @@ const VideoPlayer = dynamic(() => import('video.js').then((videojs) => {
             playsInline: true,
           });
 
-          // Handle first user interaction
           const handleFirstPlay = () => {
             setIsUserActive(true);
             onUserInteraction();
@@ -61,7 +60,7 @@ const VideoPlayer = dynamic(() => import('video.js').then((videojs) => {
           className={`video-js vjs-default-skin vjs-big-play-centered ${className}-video`}
           controls
           preload="auto"
-          width="100%"
+          style={{ width: '100%' }}
           poster={poster}
           playsInline
         >
@@ -76,7 +75,6 @@ const VideoPlayer = dynamic(() => import('video.js').then((videojs) => {
   loading: () => <div>Loading video...</div>,
 });
 
-// Memoized Slider Component to prevent unnecessary re-renders
 const Slider = React.memo(({ title, videos, currentIndex, setIndex, className }) => {
   const handleNext = useCallback(() => {
     setIndex((prev) => (prev + 1) % videos.length);
@@ -130,19 +128,19 @@ const Story = () => {
 
   const videoData = {
     tiktok: [
-      { src: 'videos/tiktok/tiktok1.mp4', poster: 'https://vlsmlsaker.s3.amazonaws.com/videos/tiktok/snap/tk-1.png' },
-      { src: 'videos/tiktok/tiktok2.mp4', poster: 'https://vlsmlsaker.s3.amazonaws.com/videos/tiktok/snap/tk-2.png' },
-      { src: 'videos/tiktok/tiktok3.mp4', poster: 'https://vlsmlsaker.s3.amazonaws.com/videos/tiktok/snap/tk-3.png' },
+      { src: 'videos/tiktok/tiktok1.mp4', poster: 'images/tiktok-poster.png' },
+      { src: 'videos/tiktok/tiktok1.mp4', poster: 'images/tiktok-poster.png' },
+      { src: 'videos/tiktok/tiktok1.mp4', poster: 'images/tiktok-poster.png' },
     ],
     facebook: [
-      { src: 'videos/facebook/facebook1.mp4', poster: 'https://vlsmlsaker.s3.amazonaws.com/videos/facebook/snap/fb-1.png' },
-      { src: 'videos/facebook/facebook2.mp4', poster: 'https://vlsmlsaker.s3.amazonaws.com/videos/facebook/snap/fb-2.png' },
-      { src: 'videos/facebook/facebook3.mp4', poster: 'https://vlsmlsaker.s3.amazonaws.com/videos/facebook/snap/fb-3.png' },
+      { src: 'videos/facebook/facebook1.mp4', poster: 'images/facebook-poster.png' },
+      { src: 'videos/facebook/facebook1.mp4', poster: 'images/facebook-poster.png' },
+      { src: 'videos/facebook/facebook1.mp4', poster: 'images/facebook-poster.png' },
     ],
     youtube: [
-      { src: 'videos/youtube/youtube1.mp4', poster: 'https://vlsmlsaker.s3.amazonaws.com/videos/youtube/snap/yt-1.png' },
-      { src: 'videos/youtube/youtube2.mp4', poster: 'https://vlsmlsaker.s3.amazonaws.com/videos/youtube/snap/yt-2.png' },
-      { src: 'videos/youtube/youtube3.mp4', poster: 'https://vlsmlsaker.s3.amazonaws.com/videos/youtube/snap/yt-3.png' },
+      { src: 'videos/youtube/youtube1.mp4', poster: 'images/youtube-poster.png' },
+      { src: 'videos/youtube/youtube1.mp4', poster: 'images/youtube-poster.png' },
+      { src: 'videos/youtube/youtube1.mp4', poster: 'images/youtube-poster.png' },
     ],
   };
 
@@ -162,7 +160,13 @@ const Story = () => {
           <div className="grid-container">
             {videoData.tiktok.map((video, idx) => (
               <div className="grid-item" key={idx}>
-                <video src={video.src} className="tiktok-video" controls playsInline/>
+                <video
+                  src={video.src}
+                  style={{ width: '100%' }}
+                  poster={video.poster}
+                  controls
+                  className="tiktok-video"
+                />
               </div>
             ))}
           </div>
@@ -171,7 +175,13 @@ const Story = () => {
           <div className="grid-container">
             {videoData.facebook.map((video, idx) => (
               <div className="grid-item" key={idx}>
-                <video src={video.src} className="facebook-video" controls playsInline/>
+                <video
+                  src={video.src}
+                  style={{ width: '100%' }}
+                  poster={video.poster}
+                  controls
+                  className="facebook-video"
+                />
               </div>
             ))}
           </div>
@@ -180,7 +190,13 @@ const Story = () => {
           <div className="grid-container">
             {videoData.youtube.map((video, idx) => (
               <div className="grid-item" key={idx}>
-                <video src={video.src} className="youtube-video" controls playsInline/>
+                <video
+                  src={video.src}
+                  style={{ width: '100%' }}
+                  poster={video.poster}
+                  controls
+                  className="youtube-video"
+                />
               </div>
             ))}
           </div>
