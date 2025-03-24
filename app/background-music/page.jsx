@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Header from "@/components/Home/Header";
 import ProgressBar from "@/components/Home/ProgressBar";
-import videojs from "video.js";
 import "video.js/dist/video-js.css";
 import "/styles/bg-music-selection.css";
 
