@@ -151,7 +151,7 @@ const Page = () => {
                                         className="uploadmp3"
                                     >
                                         <div className="uploadmp3-sub">
-                                            <div className="text">
+                                            <div className="bg-text">
                                                 <span>
                                                     Upload MP3{" "}
                                                     <span>{template.id}</span>:
@@ -195,7 +195,7 @@ const Page = () => {
                                                     : "Choose File"}
                                             </div>
                                         </div>
-                                        <div className="text">
+                                        <div className="bg-text">
                                             <span>
                                                 What Second Should This MP3 Play
                                                 From?{" "}

@@ -76,7 +76,13 @@ body {
     line-height: 24px;
     text-align: left;
 }
-
+.bg-text {
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: left;
+}
 .center {
     display: flex;
     justify-content: center;
