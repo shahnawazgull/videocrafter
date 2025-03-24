@@ -51,7 +51,7 @@ export default function Home() {
             slides.filter(slide => slide.isEditing).map(slide => slide.id)
         );
         setActiveSlideIds(initialActiveIds);
-    }, []);
+    }, [slides]);
 
     useEffect(() => {
         if (isProcessing) {
@@ -173,10 +173,9 @@ export default function Home() {
         if (scriptFile) {
             const text = await scriptFile.text();
             const lines = text.split("\n").filter((line) => line.trim() !== "");
-            // Find the maximum existing ID to avoid duplicates
             const maxId = slides.length > 0 ? Math.max(...slides.map(s => s.id)) : 0;
             const newSlides = lines.map((line, index) => ({
-                id: maxId + index + 1, // Ensure unique IDs
+                id: maxId + index + 1,
                 subtitle: `Subtitle ${maxId + index + 1}`,
                 text: line.trim(),
                 markedText: line.trim(),
@@ -184,7 +183,7 @@ export default function Home() {
                 isEditing: false,
             }));
             setSlides(newSlides);
-            setSlideCount(maxId + lines.length); // Update slideCount to reflect the new max ID
+            setSlideCount(maxId + lines.length);
             setActiveSlideIds(new Set());
             if (tableRef.current) {
                 tableRef.current.scrollIntoView({ behavior: "smooth" });
@@ -234,10 +233,9 @@ export default function Home() {
 
     const addSlide = (e) => {
         e.preventDefault();
-        // Find the maximum existing ID
         const maxId = slides.length > 0 ? Math.max(...slides.map(s => s.id)) : 0;
         const newSlide = {
-            id: maxId + 1, // Ensure a unique ID
+            id: maxId + 1,
             subtitle: `Subtitle ${maxId + 1}`,
             text: "",
             markedText: "",
@@ -245,7 +243,7 @@ export default function Home() {
             isEditing: true,
         };
         setSlides([...slides, newSlide]);
-        setSlideCount(maxId + 1); // Update slideCount to the new max ID
+        setSlideCount(maxId + 1);
         setActiveSlideIds(prev => new Set(prev).add(newSlide.id));
     };
 
@@ -268,29 +266,39 @@ export default function Home() {
     const handleTextSelection = (slideId) => {
         const selection = window.getSelection();
         const selected = selection.toString().trim();
-        if (selected) {
+        // Check if the selection contains at least one full word (not just a single character)
+        if (selected && /\b\w+\b/.test(selected) && selected.length > 1) {
             setSelectedSlideId(slideId);
             setSelectedText(selected);
             setPopupOpen(true);
+        } else {
+            // Optionally alert the user or silently ignore
+            // alert("Please select at least one full word.");
         }
     };
 
     const handlePopupSubmit = (shouldHighlight) => {
-        if (shouldHighlight) {
-            const updatedSlides = slides.map((slide) =>
-                slide.id === selectedSlideId
-                    ? {
-                        ...slide,
-                        markedText: slide.text.replace(
-                            selectedText,
+        if (shouldHighlight && selectedSlideId && selectedText) {
+            const updatedSlides = slides.map((slide) => {
+                if (slide.id === selectedSlideId) {
+                    let newMarkedText = slide.markedText || slide.text || "";
+                    if (!newMarkedText.includes(`<mark class="handlePopupSubmit">${selectedText}</mark>`)) {
+                        const regex = new RegExp(`(${selectedText})(?![^<]*>)`, "i");
+                        newMarkedText = newMarkedText.replace(
+                            regex,
                             `<mark class="handlePopupSubmit">${selectedText}</mark>`
-                        ),
-                        isEditing: false,
+                        );
                     }
-                    : slide
-            );
+                    return {
+                        ...slide,
+                        markedText: newMarkedText,
+                        isEditing: false,
+                    };
+                }
+                return slide;
+            });
             setSlides(updatedSlides);
-            setActiveSlideIds(prev => {
+            setActiveSlideIds((prev) => {
                 const newSet = new Set(prev);
                 newSet.delete(selectedSlideId);
                 return newSet;
@@ -306,9 +314,9 @@ export default function Home() {
                 : slide
         );
         setSlides(updatedSlides);
-        setActiveSlideIds(prev => {
+        setActiveSlideIds((prev) => {
             const newSet = new Set(prev);
-            if (updatedSlides.find(slide => slide.id === slideId).isEditing) {
+            if (updatedSlides.find((slide) => slide.id === slideId).isEditing) {
                 newSet.add(slideId);
             } else {
                 newSet.delete(slideId);
@@ -332,7 +340,7 @@ export default function Home() {
                     : slide
             );
             setSlides(updatedSlides);
-            setActiveSlideIds(prev => {
+            setActiveSlideIds((prev) => {
                 const newSet = new Set(prev);
                 newSet.delete(slideId);
                 return newSet;
@@ -354,7 +362,7 @@ export default function Home() {
                     : slide
             );
             setSlides(updatedSlides);
-            setActiveSlideIds(prev => {
+            setActiveSlideIds((prev) => {
                 const newSet = new Set(prev);
                 newSet.delete(slideId);
                 return newSet;
@@ -373,32 +381,17 @@ export default function Home() {
     return (
         <>
             <meta charSet="UTF-8" />
-            <meta
-                name="viewport"
-                content="width=device-width, initial-scale=1.0"
-            />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
             <title>VideoCrafter.io</title>
-            <link
-                rel="stylesheet"
-                href="https://vlsmlsaker.s3.amazonaws.com/css/style.css"
-            />
-            <link
-                rel="stylesheet"
-                href="https://vlsmlsaker.s3.amazonaws.com/sceneselection/style.css"
-            />
+            <link rel="stylesheet" href="https://vlsmlsaker.s3.amazonaws.com/css/style.css" />
+            <link rel="stylesheet" href="https://vlsmlsaker.s3.amazonaws.com/sceneselection/style.css" />
             <link rel="stylesheet" href="/temp.css" />
-            <link
-                href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css"
-                rel="stylesheet"
-            />
+            <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet" />
             <Header />
             <ProgressBar />
             <div className="body-container">
                 <div id="pfp" onClick={togglePfpDropdown}></div>
-                <div
-                    id="pfpdropdown"
-                    className={isPfpDropdownOpen ? "present" : "not-present"}
-                ></div>
+                <div id="pfpdropdown" className={isPfpDropdownOpen ? "present" : "not-present"}></div>
 
                 <div className="card-container">
                     <div className="card">
@@ -408,45 +401,31 @@ export default function Home() {
                                     <img src="/images/back.svg" alt="Back" />
                                 </Link>
                             </div>
-                            <span className="card-header-span">
-                                Upload Your Script
-                            </span>
+                            <span className="card-header-span">Upload Your Script</span>
                             <h5></h5>
                         </div>
                         <div className="card-body">
                             <div className="Script-text-file-text">
                                 <div className="Script-text-file-text-sub">
-                                    <div className="script-text">
-                                        Script Text File:
-                                    </div>
+                                    <div className="script-text">Script Text File:</div>
                                     <div className="vh-parent">
                                         <div className="vh-child">
                                             <span className="text3">
-                                                Please Make Sure Your Script Is
-                                                On Txt File
+                                                Please Make Sure Your Script Is On Txt File
                                             </span>
                                         </div>
                                         ?
                                     </div>
                                 </div>
-                                <a
-                                    href="/text/media/logos/VideoCrafter.txt/"
-                                    download=""
-                                    className="download-btn"
-                                >
+                                <a href="/text/media/logos/VideoCrafter.txt/" download="" className="download-btn">
                                     Click Here To Download An Empty Template
                                 </a>
                             </div>
                         </div>
                         <div className="Script-text-file-Upload">
                             <div className="script-upload-sub">
-                                <img
-                                    src="/images/choose-icon.svg"
-                                    alt="Choose file"
-                                />
-                                <span className="text2 choosefile-heading">
-                                    Choose file
-                                </span>
+                                <img src="/images/choose-icon.svg" alt="Choose file" />
+                                <span className="text2 choosefile-heading">Choose file</span>
                                 <input
                                     required
                                     type="file"
@@ -455,52 +434,33 @@ export default function Home() {
                                     onChange={handleScriptFileChange}
                                 />
                             </div>
-                            <div
-                                className="text2"
-                                id="fileName"
-                                style={{ color: "#00000080" }}
-                            >
+                            <div className="text2" id="fileName" style={{ color: "#00000080" }}>
                                 {scriptFileName}
                             </div>
                         </div>
                         <div className="center-container">
-                            <button
-                                id="scriptUploadButton"
-                                className="file-button"
-                                onClick={loadScript}
-                            >
+                            <button id="scriptUploadButton" className="file-button" onClick={loadScript}>
                                 Load Script
                             </button>
                         </div>
                     </div>
 
-                    <div
-                        className="card"
-                        id="uploadCard"
-                        style={{ position: "relative" }}
-                    >
+                    <div className="card" id="uploadCard" style={{ position: "relative" }}>
                         <div className="card-header">
-                            <span className="card-header-span">
-                                Upload To Your Asset Folder
-                            </span>
+                            <span className="card-header-span">Upload To Your Asset Folder</span>
                             <h5>
-                                These Files Will be Saved In Your Asset Library
-                                Which You Can Manage Through The Profile Icon
-                                Above
+                                These Files Will be Saved In Your Asset Library Which You Can Manage Through The Profile Icon Above
                             </h5>
                         </div>
                         <div className="card-body upload">
                             <div className="Script-text-file-text">
                                 <div className="upload-folder-heading">
                                     <div className="Script-text-file-text-sub">
-                                        <div className="script-text">
-                                            Upload Folder:
-                                        </div>
+                                        <div className="script-text">Upload Folder:</div>
                                         <div className="vh-parent">
                                             <div className="vh-child">
                                                 <span className="text3">
-                                                    Please Make Sure Your Script
-                                                    Is On Txt File
+                                                    Please Make Sure Your Script Is On Txt File
                                                 </span>
                                             </div>
                                             ?
@@ -511,13 +471,8 @@ export default function Home() {
                         </div>
                         <div className="Script-text-file-Upload">
                             <div className="script-upload-sub">
-                                <img
-                                    src="/images/choose-icon.svg"
-                                    alt="Choose file"
-                                />
-                                <span className="text2 choosefile-heading">
-                                    Choose file
-                                </span>
+                                <img src="/images/choose-icon.svg" alt="Choose file" />
+                                <span className="text2 choosefile-heading">Choose file</span>
                                 <input
                                     id="fileInput"
                                     type="file"
@@ -526,30 +481,17 @@ export default function Home() {
                                     onChange={handleFolderFileChange}
                                 />
                             </div>
-                            <div
-                                className="text2"
-                                id="fileName2"
-                                style={{ color: "#00000080" }}
-                            >
+                            <div className="text2" id="fileName2" style={{ color: "#00000080" }}>
                                 {folderFileName}
                             </div>
                         </div>
                         <div id="centered-c" className="center-containered">
-                            <div
-                                id="uploadStatus"
-                                style={{ textAlign: "center" }}
-                            ></div>
-                            <div
-                                id="progressWrapper"
-                                style={{ display: "none" }}
-                            >
+                            <div id="uploadStatus" style={{ textAlign: "center" }}></div>
+                            <div id="progressWrapper" style={{ display: "none" }}>
                                 <div id="progressBar"></div>
                                 <div id="percent"></div>
                             </div>
-                            <button
-                                className="file-button"
-                                id="videoUploadButton"
-                            >
+                            <button className="file-button" id="videoUploadButton">
                                 Upload and Process
                             </button>
                         </div>
@@ -558,158 +500,71 @@ export default function Home() {
 
                 <div className="grid-container2">
                     <div className="section">
-                        <div
-                            className="section-header"
-                            onClick={(e) =>
-                                toggleContent("instructions", e.currentTarget)
-                            }
-                        >
+                        <div className="section-header" onClick={(e) => toggleContent("instructions", e.currentTarget)}>
                             Instructions <span>▶</span>
                         </div>
                         <div className="section-content" id="instructions">
-                            <div
-                                className="bor"
-                                style={{ border: "1px solid #cccccc" }}
-                            ></div>
+                            <div className="bor" style={{ border: "1px solid #cccccc" }}></div>
                             <h3>Step 1: Upload Your Script</h3>
-                            <p>
-                                Each line of your script represents a subtitle
-                                box in the video. For example:
-                            </p>
+                            <p>Each line of your script represents a subtitle box in the video. For example:</p>
                             <div className="highlight">
                                 <p>
-                                    If your script says, "Hello, my name is
-                                    Steve," on the first line of your text file,
-                                    the first subtitle box will display Hello,
-                                    my name is Steve.
+                                    If your script says, "Hello, my name is Steve," on the first line of your text file,
+                                    the first subtitle box will display Hello, my name is Steve.
                                 </p>
                             </div>
                             <h3>Step 2: Highlight And Assign Clips</h3>
                             <p className="highlight-words">Highlight words:</p>
                             <p>
-                                Simply highlight the words in your script that
-                                you want to match with a video clip and assign a
-                                video clip.
+                                Simply highlight the words in your script that you want to match with a video clip and assign a video clip.
                             </p>
-                            <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    openModal("upload-video");
-                                }}
-                            >
+                            <a href="#" onClick={(e) => { e.preventDefault(); openModal("upload-video"); }}>
                                 Watch Video Tutorial
                             </a>
                         </div>
                     </div>
 
                     <div className="section">
-                        <div
-                            className="section-header"
-                            onClick={(e) =>
-                                toggleContent("tips", e.currentTarget)
-                            }
-                        >
-                            How To Upload Files To The Asset Folder{" "}
-                            <span>▶</span>
+                        <div className="section-header" onClick={(e) => toggleContent("tips", e.currentTarget)}>
+                            How To Upload Files To The Asset Folder <span>▶</span>
                         </div>
                         <div className="section-content" id="tips">
-                            <div
-                                className="bor"
-                                style={{
-                                    border: "1px solid #cccccc",
-                                    marginBottom: "1rem",
-                                }}
-                            ></div>
-                            <div
-                                className="tips-background"
-                                style={{
-                                    backgroundColor: "#f0f0f0",
-                                    padding: "4px 20px 20px 20px",
-                                    lineHeight: "162%",
-                                }}
-                            >
+                            <div className="bor" style={{ border: "1px solid #cccccc", marginBottom: "1rem" }}></div>
+                            <div className="tips-background" style={{ backgroundColor: "#f0f0f0", padding: "4px 20px 20px 20px", lineHeight: "162%" }}>
                                 <h3>Step 1</h3>
-                                <p>
-                                    <strong>Create a main folder:</strong>
-                                </p>
-                                <p>
-                                    On your computer, create one main folder
-                                    (e.g., MyVideoAssets). This folder will
-                                    contain all your subfolders and video clips.
-                                </p>
+                                <p><strong>Create a main folder:</strong></p>
+                                <p>On your computer, create one main folder (e.g., MyVideoAssets). This folder will contain all your subfolders and video clips.</p>
                                 <h4>Add Subfolders Inside The Main Folder:</h4>
-                                <p>
-                                    Within the main folder, create subfolders to
-                                    categorize your videos. For example:
-                                </p>
+                                <p>Within the main folder, create subfolders to categorize your videos. For example:</p>
                                 <ul>
                                     <li>Back Pain Clips</li>
                                     <li>Fitness Clips</li>
                                     <li>Testimonials</li>
                                 </ul>
                                 <h4>Add Video Files To Each Subfolder:</h4>
-                                <p>
-                                    Inside each subfolder, add the relevant
-                                    video clips. For example:
-                                </p>
+                                <p>Inside each subfolder, add the relevant video clips. For example:</p>
                                 <ul className="ul-cl">
-                                    <li>
-                                        Back Pain Clips{" "}
-                                        <span style={{ color: "#333" }}></span>{" "}
-                                        <span className="vid">
-                                            Clip1.mp4, Clip2.mp4
-                                        </span>
-                                    </li>
-                                    <li>
-                                        Fitness Clips{" "}
-                                        <span style={{ color: "#333" }}></span>{" "}
-                                        <span className="vid">
-                                            Workout1.mp4, Workout2.mp4
-                                        </span>
-                                    </li>
+                                    <li>Back Pain Clips <span style={{ color: "#333" }}></span> <span className="vid">Clip1.mp4, Clip2.mp4</span></li>
+                                    <li>Fitness Clips <span style={{ color: "#333" }}></span> <span className="vid">Workout1.mp4, Workout2.mp4</span></li>
                                 </ul>
                                 <h3>Step 2</h3>
-                                <p>
-                                    <strong>Upload to VideoCrafter.io:</strong>
-                                </p>
+                                <p><strong>Upload to VideoCrafter.io:</strong></p>
                                 <ul>
-                                    <li>
-                                        Go to the "Upload To Your Asset Folder"
-                                        section.
-                                    </li>
-                                    <li>
-                                        Click "Choose File" and select the main
-                                        folder (not individual subfolders).
-                                    </li>
-                                    <li>
-                                        Click "Upload And Process" to start the
-                                        upload.
-                                    </li>
+                                    <li>Go to the "Upload To Your Asset Folder" section.</li>
+                                    <li>Click "Choose File" and select the main folder (not individual subfolders).</li>
+                                    <li>Click "Upload And Process" to start the upload.</li>
                                 </ul>
                             </div>
-                            <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    openModal("upload-video");
-                                }}
-                            >
+                            <a href="#" onClick={(e) => { e.preventDefault(); openModal("upload-video"); }}>
                                 Watch Video Tutorial
                             </a>
                         </div>
                     </div>
 
                     {tutorialModalOpen && (
-                        <div
-                            id="tutorial-modal"
-                            className="modal"
-                            style={{ display: "block" }}
-                        >
+                        <div id="tutorial-modal" className="modal" style={{ display: "block" }}>
                             <div className="modal-content">
-                                <span className="close" onClick={closeModal}>
-                                    ×
-                                </span>
+                                <span className="close" onClick={closeModal}>×</span>
                                 <iframe
                                     src="videos/youtube/youtube1.mp4"
                                     frameBorder="0"
@@ -721,15 +576,9 @@ export default function Home() {
                     )}
 
                     {uploadModalOpen && (
-                        <div
-                            id="upload-modal"
-                            className="modal"
-                            style={{ display: "block" }}
-                        >
+                        <div id="upload-modal" className="modal" style={{ display: "block" }}>
                             <div className="modal-content">
-                                <span className="close" onClick={closeModal}>
-                                    ×
-                                </span>
+                                <span className="close" onClick={closeModal}>×</span>
                                 <iframe
                                     src="videos/youtube/youtube1.mp4"
                                     frameBorder="0"
@@ -741,27 +590,12 @@ export default function Home() {
                     )}
                 </div>
 
-                <div
-                    className="lead-container lead-details"
-                    style={{ maxWidth: "96%", margin: "0 auto" }}
-                >
-                    <table
-                        id="leadsTable"
-                        className="lead-table"
-                        style={{ width: "100%", display: "table" }}
-                        ref={tableRef}
-                    >
+                <div className="lead-container lead-details" style={{ maxWidth: "96%", margin: "0 auto" }}>
+                    <table id="leadsTable" className="lead-table" style={{ width: "100%", display: "table" }} ref={tableRef}>
                         <thead>
                             <tr style={{ height: "fit-content" }}>
-                                <th
-                                    className="slide-first"
-                                    style={{ fontSize: "1.4rem" }}
-                                >
-                                    Subtitle
-                                </th>
-                                <th style={{ fontSize: "1.4rem" }}>
-                                    Subtitle Text
-                                </th>
+                                <th className="slide-first" style={{ fontSize: "1.4rem" }}>Subtitle</th>
+                                <th style={{ fontSize: "1.4rem" }}>Subtitle Text</th>
                                 <th className="slide-last">Edit</th>
                                 <th className="slide-last">Undo</th>
                                 <th className="slide-last">Delete</th>
@@ -769,28 +603,15 @@ export default function Home() {
                         </thead>
                         <tbody>
                             {slides.map((slide) => (
-                                <tr
-                                    key={slide.id}
-                                    data-id={slide.id}
-                                    style={{ height: "5rem" }}
-                                >
+                                <tr key={slide.id} data-id={slide.id} style={{ height: "5rem" }}>
                                     <td
                                         className="slide-first"
-                                        style={{
-                                            fontSize: "1.4rem",
-                                            position: "relative",
-                                            cursor: "grab",
-                                        }}
+                                        style={{ fontSize: "1.4rem", position: "relative", cursor: "grab" }}
                                         title="Drag to move"
                                     >
                                         {slide.subtitle}
                                     </td>
-                                    <td
-                                        id={`highlightable_${slide.id}`}
-                                        onMouseUp={() =>
-                                            handleTextSelection(slide.id)
-                                        }
-                                    >
+                                    <td id={`highlightable_${slide.id}`} onMouseUp={() => handleTextSelection(slide.id)}>
                                         <div className="highlight-sub">
                                             {slide.isEditing ? (
                                                 <textarea
@@ -800,136 +621,47 @@ export default function Home() {
                                                     placeholder="Type Your Script Here"
                                                     value={slide.text}
                                                     onChange={(e) => {
-                                                        const updatedSlides =
-                                                            slides.map((s) =>
-                                                                s.id === slide.id
-                                                                    ? {
-                                                                        ...s,
-                                                                        text: e
-                                                                            .target
-                                                                            .value,
-                                                                        markedText:
-                                                                            e
-                                                                                .target
-                                                                                .value,
-                                                                    }
-                                                                    : s
-                                                            );
-                                                        setSlides(
-                                                            updatedSlides
+                                                        const updatedSlides = slides.map((s) =>
+                                                            s.id === slide.id
+                                                                ? { ...s, text: e.target.value, markedText: e.target.value }
+                                                                : s
                                                         );
+                                                        setSlides(updatedSlides);
                                                     }}
-                                                    onMouseUp={() =>
-                                                        handleTextSelection(
-                                                            slide.id
-                                                        )
-                                                    }
-                                                    onKeyDown={(e) =>
-                                                        handleKeyPress(
-                                                            e,
-                                                            slide.id
-                                                        )
-                                                    }
+                                                    onMouseUp={() => handleTextSelection(slide.id)}
+                                                    onKeyDown={(e) => handleKeyPress(e, slide.id)}
                                                 />
                                             ) : (
-                                                <span
-                                                    dangerouslySetInnerHTML={{
-                                                        __html:
-                                                            slide.markedText ||
-                                                            slide.text ||
-                                                            "",
-                                                    }}
-                                                />
+                                                <span dangerouslySetInnerHTML={{ __html: slide.markedText || slide.text || "" }} />
                                             )}
-                                            <div
-                                                className="error-message"
-                                                style={{ display: "none" }}
-                                            >
-                                                Assign Clips To All Of The
-                                                Subtitle Text
+                                            <div className="error-message" style={{ display: "none" }}>
+                                                Assign Clips To All Of The Subtitle Text
                                             </div>
-                                            <div
-                                                className="error-message"
-                                                style={{ display: "none" }}
-                                            >
-                                                Highlighting Must Start From
-                                                The First Unassigned Word Of
-                                                The Sentence.
+                                            <div className="error-message" style={{ display: "none" }}>
+                                                Highlighting Must Start From The First Unassigned Word Of The Sentence.
                                             </div>
                                         </div>
                                     </td>
-                                    <td
-                                        className={`slide-last ${activeSlideIds.has(slide.id)
-                                            ? "active"
-                                            : ""
-                                            }`}
-                                    >
-                                        <a
-                                            href="#"
-                                            className="above-del"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                toggleEdit(slide.id);
-                                            }}
-                                        >
+                                    <td className={`slide-last ${activeSlideIds.has(slide.id) ? "active" : ""}`}>
+                                        <a href="#" className="above-del" onClick={(e) => { e.preventDefault(); toggleEdit(slide.id); }}>
                                             <i
                                                 id="icon"
                                                 className="ri-edit-box-line fa-sync-alt icon"
-                                                style={{
-                                                    margin: "0 auto",
-                                                    fontSize: "20px",
-                                                    fontWeight: 600,
-                                                    cursor: "pointer",
-                                                    verticalAlign: "middle",
-                                                }}
+                                                style={{ margin: "0 auto", fontSize: "20px", fontWeight: 600, cursor: "pointer", verticalAlign: "middle" }}
                                             ></i>
                                         </a>
                                     </td>
-                                    <td
-                                        className={`slide-last ${activeSlideIds.has(slide.id)
-                                            ? "active"
-                                            : ""
-                                            }`}
-                                    >
-                                        <a
-                                            href="#"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                handleUndo(slide.id);
-                                            }}
-                                            className="above-del"
-                                        >
-                                            <img
-                                                src="/images/undo.svg"
-                                                alt="Undo"
-                                                style={{
-                                                    width: "1.2rem",
-                                                    height: "3rem",
-                                                    cursor: "pointer",
-                                                }}
-                                            />
+                                    <td className={`slide-last ${activeSlideIds.has(slide.id) ? "active" : ""}`}>
+                                        <a href="#" onClick={(e) => { e.preventDefault(); handleUndo(slide.id); }} className="above-del">
+                                            <img src="/images/undo.svg" alt="Undo" style={{ width: "1.2rem", height: "3rem", cursor: "pointer" }} />
                                         </a>
                                     </td>
-                                    <td
-                                        className="slide-last"
-                                        id={`action_${slide.id}`}
-                                    >
-                                        <a
-                                            href="#"
-                                            className="delete-row-btn"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                deleteSlide(slide.id);
-                                            }}
-                                        >
+                                    <td className="slide-last" id={`action_${slide.id}`}>
+                                        <a href="#" className="delete-row-btn" onClick={(e) => { e.preventDefault(); deleteSlide(slide.id); }}>
                                             <img
                                                 src="https://leadeditor.s3.amazonaws.com/lead-maker/images/delete-icn.svg"
                                                 alt="delete"
-                                                style={{
-                                                    width: "1.5rem",
-                                                    height: "3rem",
-                                                    cursor: "pointer",
-                                                }}
+                                                style={{ width: "1.5rem", height: "3rem", cursor: "pointer" }}
                                             />
                                         </a>
                                     </td>
@@ -940,25 +672,13 @@ export default function Home() {
 
                     <div className="add-new-sub">
                         <div className="d-flex justify-content-start">
-                            <a
-                                href="#"
-                                id="createLeadBtn"
-                                className="btn proceed-btn"
-                                onClick={addSlide}
-                            >
+                            <a href="#" id="createLeadBtn" className="btn proceed-btn" onClick={addSlide}>
                                 Add New Subtitle +
                             </a>
                         </div>
                     </div>
 
-                    <input
-                        type="number"
-                        name="no_of_slides"
-                        id="no_of_slides"
-                        hidden
-                        value={slideCount}
-                        readOnly
-                    />
+                    <input type="number" name="no_of_slides" id="no_of_slides" hidden value={slideCount} readOnly />
 
                     <div className="button-container">
                         <button
@@ -968,13 +688,9 @@ export default function Home() {
                             disabled={isProcessing}
                         >
                             <span id="button-text">
-                                {isProcessing
-                                    ? `Processing${".".repeat(dotCount)}`
-                                    : "Proceed To Background Music Selection"}
+                                {isProcessing ? `Processing${".".repeat(dotCount)}` : "Proceed To Background Music Selection"}
                             </span>
-                            {!isProcessing && (
-                                <img src="/images/arrow.svg" alt="Arrow" />
-                            )}
+                            {!isProcessing && <img src="/images/arrow.svg" alt="Arrow" />}
                         </button>
                     </div>
                 </div>
@@ -989,22 +705,10 @@ export default function Home() {
 
                 {isMounted && (
                     <>
-                        <Script
-                            src="https://code.jquery.com/jquery-3.6.0.min.js"
-                            strategy="afterInteractive"
-                        />
-                        <Script
-                            src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
-                            strategy="afterInteractive"
-                        />
-                        <Script
-                            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
-                            strategy="afterInteractive"
-                        />
-                        <Script
-                            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
-                            strategy="afterInteractive"
-                        />
+                        <Script src="https://code.jquery.com/jquery-3.6.0.min.js" strategy="afterInteractive" />
+                        <Script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" strategy="afterInteractive" />
+                        <Script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" strategy="afterInteractive" />
+                        <Script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" strategy="afterInteractive" />
                     </>
                 )}
             </div>

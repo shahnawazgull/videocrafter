@@ -4,15 +4,20 @@ export default function PopupModal({ selectedText, onClose, onSubmit }) {
     const [file, setFile] = useState(null);
     const [topic, setTopic] = useState("");
     const [videoClip, setVideoClip] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
+        setTopic("");
+        setVideoClip("");
+        setErrorMessage("");
         document.getElementById("upload-text").textContent =
             e.target.files[0]?.name || "Choose File";
     };
 
     const clearFileInput = () => {
         setFile(null);
+        setErrorMessage("");
         document.getElementById("upload-text").textContent = "Choose File";
         document.getElementById("clear-file").style.display = "none";
     };
@@ -20,17 +25,48 @@ export default function PopupModal({ selectedText, onClose, onSubmit }) {
     const handleTopicChange = (e) => {
         setTopic(e.target.value);
         setVideoClip("");
+        setFile(null);
+        setErrorMessage("");
+        if (document.getElementById("upload-text")) {
+            document.getElementById("upload-text").textContent = "Choose File";
+        }
+        if (document.getElementById("clear-file")) {
+            document.getElementById("clear-file").style.display = "none";
+        }
+    };
+
+    const handleVideoClipChange = (e) => {
+        setVideoClip(e.target.value);
+        setFile(null);
+        setErrorMessage("");
+        if (document.getElementById("upload-text")) {
+            document.getElementById("upload-text").textContent = "Choose File";
+        }
+        if (document.getElementById("clear-file")) {
+            document.getElementById("clear-file").style.display = "none";
+        }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
         const shouldHighlight = file || (topic && videoClip);
-        onSubmit(shouldHighlight);
+        if (shouldHighlight) {
+            setErrorMessage("");
+            onSubmit(shouldHighlight);
+        } else {
+            if (topic && !videoClip) {
+                setErrorMessage("Please assign a clip");
+            } else {
+                setErrorMessage("Please upload a video or assign a clip");
+            }
+        }
     };
 
     const handleClose = () => {
         onClose();
     };
+
+    const isSubmitEnabled = file || (topic && videoClip);
 
     return (
         <div className="popup-form popup-modal" style={{ display: "flex" }}>
@@ -188,9 +224,7 @@ export default function PopupModal({ selectedText, onClose, onSubmit }) {
                                             name="selected_video"
                                             className="form-select"
                                             value={videoClip}
-                                            onChange={(e) =>
-                                                setVideoClip(e.target.value)
-                                            }
+                                            onChange={handleVideoClipChange}
                                         >
                                             <option value="" disabled>
                                                 Select A Video Clip
@@ -210,9 +244,12 @@ export default function PopupModal({ selectedText, onClose, onSubmit }) {
                                             style={{
                                                 color: "red",
                                                 fontSize: "13px",
+                                                marginTop: "5px",
                                             }}
                                             id="error-slide"
-                                        ></p>
+                                        >
+                                            {errorMessage}
+                                        </p>
                                     </div>
                                     <input
                                         type="number"
@@ -233,6 +270,7 @@ export default function PopupModal({ selectedText, onClose, onSubmit }) {
                                 type="submit"
                                 id="submit-clip"
                                 className="submit-btn"
+                                disabled={!isSubmitEnabled}
                             >
                                 Submit
                             </button>
