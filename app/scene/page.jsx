@@ -351,16 +351,26 @@ export default function Home() {
 
     const handleUndo = (slideId) => {
         if (confirm("Are You Sure You Want To Reset This Sentence?")) {
-            const updatedSlides = slides.map((slide) =>
-                slide.id === slideId
-                    ? {
+            const updatedSlides = slides.map((slide) => {
+                if (slide.id === slideId) {
+                    if (!slide.originalText || slide.originalText.trim() === "") {
+                        const cleanedText = slide.markedText.replace(/<mark class="handlePopupSubmit">([^<]+)<\/mark>/gi, "$1");
+                        return {
+                            ...slide,
+                            text: cleanedText,
+                            markedText: cleanedText,
+                            isEditing: false,
+                        };
+                    }
+                    return {
                         ...slide,
                         text: slide.originalText,
                         markedText: slide.originalText,
                         isEditing: false,
-                    }
-                    : slide
-            );
+                    };
+                }
+                return slide;
+            });
             setSlides(updatedSlides);
             setActiveSlideIds((prev) => {
                 const newSet = new Set(prev);
