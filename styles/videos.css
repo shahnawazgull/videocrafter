@@ -150,5 +150,8 @@
     .placeholder video {
       width: 100%; 
     }
+    .slider-video video{
+      width: 91%;
+    }
   }
   

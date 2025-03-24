@@ -158,7 +158,6 @@ const VideoSlider = () => {
               <div className="slider-video" key={idx}>
                 <video
                   src={video.src}
-                  style={{ width: '100%' }}
                   poster={video.poster}
                   controls
                   playsInline
@@ -203,7 +202,6 @@ const VideoSlider = () => {
               <div className="slider-video" key={idx}>
                 <video
                   src={video.src}
-                  style={{ width: '100%' }}
                   poster={video.poster}
                   controls
                   playsInline
@@ -248,7 +246,6 @@ const VideoSlider = () => {
               <div className="slider-video" key={idx}>
                 <video
                   src={video.src}
-                  style={{ width: '100%' }}
                   poster={video.poster}
                   controls
                   playsInline
