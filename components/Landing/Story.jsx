@@ -202,7 +202,6 @@ const Story = () => {
           </div>
         </div>
 
-        {/* Mobile Sliders */}
         <Slider title="TikTok Ad Examples" videos={videoData.tiktok} currentIndex={tiktokIndex} setIndex={setTiktokIndex} className="tiktok" />
         <Slider title="Facebook Ad Examples" videos={videoData.facebook} currentIndex={facebookIndex} setIndex={setFacebookIndex} className="facebook" />
         <Slider title="YouTube Ad Examples" videos={videoData.youtube} currentIndex={youtubeIndex} setIndex={setYoutubeIndex} className="youtube" />
