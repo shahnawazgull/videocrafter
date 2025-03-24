@@ -216,6 +216,7 @@
     box-sizing: border-box;
     height: fit-content;
     padding: 16px 24px;
+    padding-right: 0;
     border-radius: 8px;
     border: 1px dashed #19191980;
     display: flex;
@@ -231,7 +232,7 @@
 
 .fileInput {
     position: absolute;
-    width: 100%;
+    width: fit-content;
     height: 100%;
     left: 0;
     opacity: 0;
@@ -302,7 +303,8 @@
     text-align: left;
     margin-right: 10px;
 }
-.Font-Size-text .volume-percentage{
+
+.Font-Size-text .volume-percentage {
     font-size: 18px;
     font-weight: 600;
     line-height: 21.94px;
@@ -403,4 +405,24 @@
     background: #864AF9;
     border-radius: 50%;
     cursor: pointer;
+}
+
+
+
+.clear-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    padding: 0;
+}
+
+.clear-btn:hover {
+    background: #cc0000;
 }
