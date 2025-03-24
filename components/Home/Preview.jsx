@@ -276,7 +276,7 @@ const MainContent = () => {
       borderRadiusLabel.style.display = 'none';
       borderRadiusSliderDiv.style.display = 'none';
       videoText.style.display = 'none';
-      previewBox.style.background = `url("images/tiktok.jpeg") center/cover no-repeat`;
+      previewBox.style.background = `url("/images/tiktok.png") center/cover no-repeat`;
       preview.style.marginTop = '-2rem';
       setFontError(''); // Clear font error for TikTok
     }
