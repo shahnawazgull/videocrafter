@@ -187,7 +187,7 @@ const Page = () => {
                                             className="delete-folder-link link-tag"
                                         >
                                             <img
-                                                src="https://vlsmlsaker.s3.amazonaws.com/resources/assets/assets1/delete.svg"
+                                                src="/images/delete-icn.svg"
                                                 alt="Delete Icon"
                                             />
                                             Delete

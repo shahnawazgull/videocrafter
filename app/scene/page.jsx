@@ -752,7 +752,7 @@ export default function Home() {
                                     <td className="slide-last" id={`action_${slide.id}`}>
                                         <a href="#" className="delete-row-btn" onClick={(e) => { e.preventDefault(); deleteSlide(slide.id); }}>
                                             <img
-                                                src="https://leadeditor.s3.amazonaws.com/lead-maker/images/delete-icn.svg"
+                                                src="/images/delete-icn.svg"
                                                 alt="delete"
                                                 style={{ width: "1.5rem", height: "3rem", cursor: "pointer" }}
                                             />
