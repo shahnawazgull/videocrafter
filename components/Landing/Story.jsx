@@ -99,7 +99,6 @@ const VideoSlider = () => {
                 style={{ width: '100%' }}
                 poster={video.poster}
                 controls
-                muted
                 playsInline
               />
             </div>
@@ -116,7 +115,6 @@ const VideoSlider = () => {
                 style={{ width: '100%' }}
                 poster={video.poster}
                 controls
-                muted
                 playsInline
               />
             </div>
@@ -133,7 +131,6 @@ const VideoSlider = () => {
                 style={{ width: '100%' }}
                 poster={video.poster}
                 controls
-                muted
                 playsInline
               />
             </div>
@@ -164,7 +161,6 @@ const VideoSlider = () => {
                   style={{ width: '100%' }}
                   poster={video.poster}
                   controls
-                  muted
                   playsInline
                 />
               </div>
@@ -210,7 +206,6 @@ const VideoSlider = () => {
                   style={{ width: '100%' }}
                   poster={video.poster}
                   controls
-                  muted
                   playsInline
                 />
               </div>
@@ -256,7 +251,6 @@ const VideoSlider = () => {
                   style={{ width: '100%' }}
                   poster={video.poster}
                   controls
-                  muted
                   playsInline
                 />
               </div>
