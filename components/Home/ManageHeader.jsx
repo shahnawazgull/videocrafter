@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import '/app/temp.css';
+// import '/app/temp.css';
 import '/styles/style.css';
 import '/styles/music.css';
 import Link from 'next/link';
