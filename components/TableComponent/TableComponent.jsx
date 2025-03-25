@@ -61,6 +61,9 @@ const TableComponent = ({
     };
 
     const handleTextSelection = (slideId) => {
+        const slide = slides.find(s => s.id === slideId);
+        if (slide.isEditing) return;  // Don't show popup if in editing mode
+
         const selection = window.getSelection();
         const selected = selection.toString().trim();
         if (selected && /\b\w+\b/.test(selected) && selected.length > 1) {
@@ -211,11 +214,14 @@ const TableComponent = ({
                                                 );
                                                 setSlides(updatedSlides);
                                             }}
-                                            onMouseUp={() => handleTextSelection(slide.id)}
                                             onKeyDown={(e) => handleKeyPress(e, slide.id)}
+                                        // Removed the onMouseUp handler here since we don't want popups during editing
                                         />
                                     ) : (
-                                        <span dangerouslySetInnerHTML={{ __html: slide.markedText || slide.text || "" }} />
+                                        <span
+                                            dangerouslySetInnerHTML={{ __html: slide.markedText || slide.text || "" }}
+                                            onMouseUp={() => handleTextSelection(slide.id)}
+                                        />
                                     )}
                                     <div className="error-message" style={{ display: "none" }}>
                                         Assign Clips To All Of The Subtitle Text
