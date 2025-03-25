@@ -7,12 +7,25 @@ export default function PopupModal({ selectedText, onClose, onSubmit }) {
     const [errorMessage, setErrorMessage] = useState("");
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
         setTopic("");
         setVideoClip("");
         setErrorMessage("");
-        document.getElementById("upload-text").textContent =
-            e.target.files[0]?.name || "Choose File";
+
+        if (selectedFile) {
+            const fileName = selectedFile.name;
+            const lastDotIndex = fileName.lastIndexOf('.');
+            const nameWithoutExt = lastDotIndex !== -1 ? fileName.substring(0, lastDotIndex) : fileName;
+            const extension = lastDotIndex !== -1 ? fileName.substring(lastDotIndex) : '';
+
+            const firstWord = nameWithoutExt.split(/\s+/)[0];
+
+            const displayName = firstWord + (extension ? extension : '');
+            document.getElementById("upload-text").textContent = displayName;
+        } else {
+            document.getElementById("upload-text").textContent = "Choose File";
+        }
     };
 
     const clearFileInput = () => {

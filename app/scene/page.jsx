@@ -82,45 +82,50 @@ export default function Home() {
                     ui.item.data("scrollInterval", scrollInterval);
                 },
                 update: function (event, ui) {
-                    const updatedSlides = Array.from($("#leadsTable tbody tr")).map((row, index) => {
-                        const slideId = parseInt($(row).data("id"));
+                    const newOrder = $(this).sortable("toArray", { attribute: "data-id" });
+                    const updatedSlides = newOrder.map((id, index) => {
+                        const slideId = parseInt(id);
                         const slide = slides.find((s) => s.id === slideId);
-                        return { ...slide, subtitle: `Subtitle ${index + 1}` };
+                        return {
+                            ...slide,
+                            subtitle: `Subtitle ${index + 1}` // Update subtitle number based on new position
+                        };
                     });
                     setSlides(updatedSlides);
                 },
                 stop: function (event, ui) {
                     clearInterval(ui.item.data("scrollInterval"));
+                    // Ensure the UI reflects the final position
+                    $(this).sortable("refreshPositions");
                 },
             });
-
             $("<style>")
                 .prop("type", "text/css")
                 .html(`
-          .ui-sortable-placeholder {
-            background: #f0f0f0;
-            border-left: 2px solid purple;
-            visibility: visible !important;
-            height: 50px;
-          }
-          td[data-tooltip]:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            top: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            white-space: nowrap;
-            z-index: 1000;
-          }
-          .slide-last.active {
-            background-color: rgb(211, 211, 211);
-          }
-        `)
+      .ui-sortable-placeholder {
+        background: #f0f0f0;
+        border-left: 2px solid purple;
+        visibility: visible !important;
+        height: 50px;
+      }
+      td[data-tooltip]:hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        top: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        white-space: nowrap;
+        z-index: 1000;
+      }
+      .slide-last.active {
+        background-color: rgb(211, 211, 211);
+      }
+    `)
                 .appendTo("head");
         }
     }, [isMounted, slides]);
@@ -165,17 +170,40 @@ export default function Home() {
         if (scriptFile) {
             const text = await scriptFile.text();
             const lines = text.split("\n").filter((line) => line.trim() !== "");
-            const maxId = slides.length > 0 ? Math.max(...slides.map((s) => s.id)) : 0;
-            const newSlides = lines.map((line, index) => ({
-                id: maxId + index + 1,
-                subtitle: `Subtitle ${maxId + index + 1}`,
-                text: line.trim(),
-                markedText: line.trim(),
-                originalText: line.trim(),
-                isEditing: false,
-            }));
-            setSlides(newSlides);
-            setSlideCount(maxId + lines.length);
+
+            // Check if the existing slides are just the default unchanged slide
+            const isDefaultUnchanged =
+                slides.length === 1 &&
+                slides[0].id === 1 &&
+                (slides[0].text === "" || slides[0].text === "Type Your Script Here");
+
+            let newSlides;
+            if (isDefaultUnchanged) {
+                // Replace the default slide entirely and start from 1
+                newSlides = lines.map((line, index) => ({
+                    id: index + 1,
+                    subtitle: `Subtitle ${index + 1}`,
+                    text: line.trim(),
+                    markedText: line.trim(),
+                    originalText: line.trim(),
+                    isEditing: false,
+                }));
+                setSlides(newSlides);
+                setSlideCount(lines.length);
+            } else {
+                // Append to existing slides if user has modified them
+                const startIndex = slides.length;
+                newSlides = lines.map((line, index) => ({
+                    id: startIndex + index + 1,
+                    subtitle: `Subtitle ${startIndex + index + 1}`,
+                    text: line.trim(),
+                    markedText: line.trim(),
+                    originalText: line.trim(),
+                    isEditing: false,
+                }));
+                setSlides([...slides, ...newSlides]);
+                setSlideCount(startIndex + lines.length);
+            }
             setActiveSlideIds(new Set());
         }
     };

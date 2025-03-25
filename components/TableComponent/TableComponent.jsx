@@ -30,17 +30,17 @@ const TableComponent = ({
 
     const addSlide = (e) => {
         e.preventDefault();
-        const maxId = slides.length > 0 ? Math.max(...slides.map((s) => s.id)) : 0;
+        const newId = slides.length + 1;
         const newSlide = {
-            id: maxId + 1,
-            subtitle: `Subtitle ${maxId + 1}`,
+            id: newId,
+            subtitle: `Subtitle ${newId}`, // Will start from 1 if empty, or continue sequence
             text: "",
             markedText: "",
             originalText: "",
             isEditing: true,
         };
         setSlides([...slides, newSlide]);
-        setSlideCount(maxId + 1);
+        setSlideCount(newId);
         setActiveSlideIds((prev) => new Set(prev).add(newSlide.id));
     };
 
@@ -215,7 +215,6 @@ const TableComponent = ({
                                                 setSlides(updatedSlides);
                                             }}
                                             onKeyDown={(e) => handleKeyPress(e, slide.id)}
-                                        // Removed the onMouseUp handler here since we don't want popups during editing
                                         />
                                     ) : (
                                         <span
