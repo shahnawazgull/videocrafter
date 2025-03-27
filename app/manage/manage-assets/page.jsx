@@ -171,7 +171,7 @@ const Page = () => {
                                 <div className="actions">
                                     <div>
                                         <a
-                                            href="/video/rename-folder/36/"
+                                            href="#"
                                             className="rename-folder-link link-tag"
                                         >
                                             <img
@@ -184,7 +184,7 @@ const Page = () => {
                                     </div>
                                     <div>
                                         <a
-                                            href="/video/categories/delete/36/"
+                                            href="#"
                                             className="delete-folder-link link-tag"
                                             style={{width:'20px'}}
                                         >

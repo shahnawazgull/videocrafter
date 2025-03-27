@@ -101,7 +101,7 @@ const Page = () => {
                                 >
                                     <div>
                                         <a
-                                            href="/text/delete_textfile/347/"
+                                            href="#"
                                             hx-get="/text/delete_textfile/347/"
                                             hx-target="#confirmation-box"
                                             hx-swap="innerHTML"

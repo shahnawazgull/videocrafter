@@ -11,7 +11,7 @@ const Page = () => {
             <div className="outer">
                 <div className="info-header">
                     <h3>Subscription Details</h3>
-                    <Link href="/billing-portal" className="link-tag">
+                    <Link href="#" className="link-tag">
                         Manage Billing Info
                     </Link>
                 </div>
@@ -96,7 +96,7 @@ const Page = () => {
                         />{" "}
                         Create up to 25 VSLs per month
                     </p>
-                    <Link href="/accounts/" className="link-tag">
+                    <Link href="#" className="link-tag">
                         Upgrade Subscription
                     </Link>
                 </div>
@@ -118,7 +118,7 @@ const Page = () => {
                         />{" "}
                         Create up to 60 VSLs per month
                     </p>
-                    <Link href="/accounts/" className="link-tag">
+                    <Link href="#" className="link-tag">
                         Upgrade Subscription
                     </Link>
                 </div>

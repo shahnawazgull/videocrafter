@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import Header from "@/components/Home/Header";
 import ProgressBar from "@/components/Home/ProgressBar";
@@ -15,8 +15,6 @@ const Page = () => {
 
     const videoRef = useRef(null);
     const playerRef = useRef(null);
-
-    // ... (keeping your existing useEffect for video player unchanged)
 
     const handleAddMp3 = () => {
         const newId = mp3Templates.length + 1;
@@ -52,7 +50,7 @@ const Page = () => {
     };
 
     const formatTimeInput = (value) => {
-        let cleaned = value.replace(/\D/g, '');
+        let cleaned = value.replace(/\D/g, "");
         cleaned = cleaned.slice(0, 4);
         if (cleaned.length > 2) {
             return `${cleaned.slice(0, 2)}:${cleaned.slice(2)}`;
@@ -119,7 +117,19 @@ const Page = () => {
                             <div id="musicContainer">
                                 {mp3Templates.map((template) => (
                                     <div key={template.id} className="uploadmp3">
-                                        {/* ... (keeping uploadmp3-sub and delete button) */}
+                                        <div className="mp-label bg-text">
+                                            MP{template.id}
+                                            {mp3Templates.length > 1 && (
+                                                <button
+                                                    type="button"
+                                                    className="delete-btn"
+                                                    onClick={() => handleDeleteMp3(template.id)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            )}
+                                        </div>
+
                                         <div className="file-input-container">
                                             <div className="choose-file-sty">
                                                 <img src="/images/upload-icon.svg" alt="" />
@@ -143,14 +153,16 @@ const Page = () => {
                                                     </button>
                                                 )}
                                             </div>
-
                                         </div>
+
                                         <div className="bg-text">
                                             <span>
                                                 What Second Should This MP3 Play From?{" "}
                                                 <span className="text-span">In Minutes</span>
                                             </span>
+                                            
                                         </div>
+
                                         <div className="start-main-div">
                                             <div className="start-sub-div">
                                                 <span className="text start-text">Start:</span>
@@ -177,10 +189,11 @@ const Page = () => {
                                                 />
                                             </div>
                                         </div>
+
                                         <div>
                                             <div className="Font-Size-text">
                                                 <div className="mp3-volume">
-                                                    MP3 {template.id} Volume:
+                                                    MP3 {template.id}:
                                                 </div>
                                                 <span className="volume-percentage">{template.volume}%</span>
                                             </div>
@@ -196,14 +209,9 @@ const Page = () => {
                                                         handleInputChange(
                                                             template.id,
                                                             "volume",
-                                                            parseInt(
-                                                                e.target.value
-                                                            )
+                                                            parseInt(e.target.value)
                                                         );
-                                                        e.target.style.setProperty(
-                                                            "--value",
-                                                            e.target.value
-                                                        );
+                                                        e.target.style.setProperty("--value", e.target.value);
                                                     }}
                                                 />
                                             </div>
@@ -220,11 +228,9 @@ const Page = () => {
                                     <img src="/images/add.svg" alt="" />
                                     Upload Another MP3
                                 </button>
+
                                 <div id="proceed">
-                                    <a
-                                        href="/download-scene"
-                                        className="button button-proceed"
-                                    >
+                                    <a href="/download-scene" className="button button-proceed">
                                         Proceed Without Background Music
                                         <img src="/images/arrow.svg" alt="" />
                                     </a>

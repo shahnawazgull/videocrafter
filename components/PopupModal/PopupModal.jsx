@@ -19,9 +19,11 @@ export default function PopupModal({ selectedText, onClose, onSubmit }) {
             const nameWithoutExt = lastDotIndex !== -1 ? fileName.substring(0, lastDotIndex) : fileName;
             const extension = lastDotIndex !== -1 ? fileName.substring(lastDotIndex) : '';
 
-            const firstWord = nameWithoutExt.split(/\s+/)[0];
+            // Take the first 7 characters of the file name (without extension)
+            const truncatedName = nameWithoutExt.length > 7 ? nameWithoutExt.substring(0, 7) : nameWithoutExt;
 
-            const displayName = firstWord + (extension ? extension : '');
+            // Combine with the extension
+            const displayName = truncatedName + (extension ? extension : '');
             document.getElementById("upload-text").textContent = displayName;
         } else {
             document.getElementById("upload-text").textContent = "Choose File";
