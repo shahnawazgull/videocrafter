@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useRef } from "react";
 import PopupModal from "@/components/PopupModal/PopupModal";
 
@@ -33,7 +33,7 @@ const TableComponent = ({
         const newId = slides.length + 1;
         const newSlide = {
             id: newId,
-            subtitle: `Subtitle ${newId}`, // Will start from 1 if empty, or continue sequence
+            subtitle: `Subtitle ${newId}`,
             text: "",
             markedText: "",
             originalText: "",
@@ -60,16 +60,101 @@ const TableComponent = ({
         });
     };
 
+    // Check if all textareas are hidden (i.e., no slides are in editing mode)
+    const areAllTextareasHidden = () => {
+        return slides.every((slide) => !slide.isEditing);
+    };
+
+    // Check for slides that have unassigned text (i.e., text not wrapped in <mark> tags)
+    const fetchNoSubclipIds = async () => {
+        const idsWithoutClips = slides
+            .filter((slide) => {
+                const markedText = slide.markedText || slide.text || "";
+                // Strip out all <mark> tags and their content to get the remaining unassigned text
+                const unassignedText = markedText
+                    .replace(/<mark class="handlePopupSubmit">[^<]+<\/mark>/g, "")
+                    .trim();
+                // If there's any remaining text after stripping <mark> tags, the slide has unassigned text
+                return unassignedText.length > 0;
+            })
+            .map((slide) => slide.id);
+        return idsWithoutClips;
+    };
+
+    // Update backend order (mocked for now)
+    const updateBackendOrder = () => {
+        console.log("Updating backend order with slides:", slides);
+        // Add your backend update logic here if needed
+    };
+
+    // Handle Proceed button click with validations
+    const handleProceedWithValidation = async () => {
+        setIsProcessing(true);
+
+        if (areAllTextareasHidden()) {
+            const idsWithoutClips = await fetchNoSubclipIds();
+            if (idsWithoutClips.length > 0) {
+                // Show error messages for slides with unassigned text
+                idsWithoutClips.forEach((id) => {
+                    const errorMessage = document.querySelector(`#error-message_${id}`);
+                    if (errorMessage) {
+                        const slide = slides.find((s) => s.id === id);
+                        if (!slide.markedText || slide.markedText.trim() === "") {
+                            errorMessage.textContent = "Please Wait For Clip To Process";
+                        } else {
+                            errorMessage.textContent = "Assign Clips To All Of The Subtitle Text";
+                        }
+                        errorMessage.style.display = "block"; // Show the error message
+                    }
+                });
+                setIsProcessing(false);
+            } else {
+                // No validation errors, proceed
+                updateBackendOrder();
+                handleProceed(); // Call the original handleProceed to navigate
+            }
+        } else {
+            alert("You Need To Save or Delete The Current Text");
+            setIsProcessing(false);
+        }
+    };
+
+    // Handle text selection with validation
     const handleTextSelection = (slideId) => {
-        const slide = slides.find(s => s.id === slideId);
-        if (slide.isEditing) return;  // Don't show popup if in editing mode
+        const slide = slides.find((s) => s.id === slideId);
+        if (slide.isEditing) return; // Don't show popup if in editing mode
 
         const selection = window.getSelection();
         const selected = selection.toString().trim();
         if (selected && /\b\w+\b/.test(selected) && selected.length > 1) {
-            setSelectedSlideId(slideId);
-            setSelectedText(selected);
-            setPopupOpen(true);
+            // Get the current marked text and strip out already assigned (marked) portions
+            const markedText = slide.markedText || slide.text || "";
+            const unassignedText = markedText
+                .replace(/<mark class="handlePopupSubmit">[^<]+<\/mark>/g, "")
+                .trim(); // Remove marked text to get only unassigned text
+
+            // Validate the selection against the unassigned text
+            const startsCorrectly = unassignedText.startsWith(selected);
+            const words = unassignedText.split(/\s+/);
+            const selectedWords = selected.split(/\s+/);
+            const isWordAligned = selectedWords.every((word) => words.includes(word));
+
+            const errorMessage = document.querySelector(`#error-message_${slideId}`);
+            if (startsCorrectly && isWordAligned) {
+                if (errorMessage) {
+                    errorMessage.textContent = "";
+                    errorMessage.style.display = "none";
+                }
+                setSelectedSlideId(slideId);
+                setSelectedText(selected);
+                setPopupOpen(true);
+            } else {
+                if (errorMessage) {
+                    errorMessage.textContent = "Highlighting Must Start From The First Unassigned Word Of The Sentence.";
+                    errorMessage.style.display = "block";
+                }
+            }
+            selection.removeAllRanges();
         }
     };
 
@@ -126,11 +211,11 @@ const TableComponent = ({
             const updatedSlides = slides.map((slide) =>
                 slide.id === slideId
                     ? {
-                        ...slide,
-                        text: textarea.value,
-                        markedText: textarea.value,
-                        isEditing: false,
-                    }
+                          ...slide,
+                          text: textarea.value,
+                          markedText: textarea.value,
+                          isEditing: false,
+                      }
                     : slide
             );
             setSlides(updatedSlides);
@@ -222,8 +307,8 @@ const TableComponent = ({
                                             onMouseUp={() => handleTextSelection(slide.id)}
                                         />
                                     )}
-                                    <div className="error-message" style={{ display: "none" }}>
-                                        Assign Clips To All Of The Subtitle Text
+                                    <div id={`error-message_${slide.id}`} className="error-message" style={{ display: "none" }}>
+                                        {/* Error message will be set dynamically */}
                                     </div>
                                     <div className="error-message" style={{ display: "none" }}>
                                         Highlighting Must Start From The First Unassigned Word Of The Sentence.
@@ -272,13 +357,18 @@ const TableComponent = ({
                 <button
                     type="button"
                     className={`button-container-btn ${isProcessing ? "processing" : ""}`}
-                    onClick={handleProceed}
+                    onClick={handleProceedWithValidation}
                     disabled={isProcessing}
                 >
                     <span id="button-text">
                         {isProcessing ? `Processing${".".repeat(dotCount)}` : "Proceed To Background Music Selection"}
                     </span>
-                    {!isProcessing && <img src="/images/arrow.svg" alt="Arrow" />}
+                    <img
+                        id="proceed-svg"
+                        src="/images/arrow.svg"
+                        alt="Arrow"
+                        style={{ display: isProcessing ? "none" : "inline-block" }}
+                    />
                 </button>
             </div>
 

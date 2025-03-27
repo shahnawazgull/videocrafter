@@ -1,58 +1,116 @@
 "use client"
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import ManageHeader from "@/components/Home/ManageHeader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import "/styles/manage-asset-library.css";
 
 const Page = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [activeMenuId, setActiveMenuId] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false); // New state for loader
+    const [isLoading, setIsLoading] = useState(false);
+    const [folders, setFolders] = useState([{
+        id: 1,
+        name: "hook_videos (4)",
+        items: 5,
+        modified: "Feb. 13, 2025, 2:34 p.m."
+    }]);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [renamingFolderId, setRenamingFolderId] = useState(null);
+    const [newFolderName, setNewFolderName] = useState("");
     const menuRef = useRef(null);
+    const fileInputRef = useRef(null);
+    const timeoutRef = useRef(null);
 
-    // Toggle menu visibility
-    const toggleMenu = (e) => {
+    const toggleMenu = useCallback((e, folderId) => {
         e.stopPropagation();
-        setIsMenuOpen((prev) => !prev);
-    };
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        
+        timeoutRef.current = setTimeout(() => {
+            setActiveMenuId(prev => prev === folderId ? null : folderId);
+        }, 150);
+    }, []);
 
-    // Hide menu when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
-                setIsMenuOpen(false);
+                setActiveMenuId(null);
             }
         };
-
         document.addEventListener("click", handleClickOutside);
         return () => {
             document.removeEventListener("click", handleClickOutside);
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
         };
     }, []);
 
-    // Open modal with loader delay
     const openModal = (e) => {
         e.preventDefault();
-        setIsLoading(true); // Show loader
-        setTimeout(() => {
-            setIsLoading(false); // Hide loader
-            setIsModalOpen(true); // Show modal
-        }, 1000); // 1-second delay
+        setIsModalOpen(true);
+        setUploadProgress(0);
     };
 
-    // Close modal
     const closeModal = () => {
         setIsModalOpen(false);
+        setUploadProgress(0);
     };
 
-    // Handle form submission with loader
     const handleUploadSubmit = (e) => {
         e.preventDefault();
-        setIsModalOpen(false); // Hide modal immediately
-        setIsLoading(true); // Show loader
-        setTimeout(() => {
-            setIsLoading(false); // Hide loader after "upload"
-            console.log("Upload submitted");
-        }, 1000); // 1-second delay for demo
+        const files = fileInputRef.current?.files;
+        if (!files || files.length === 0) return;
+
+        setIsLoading(true);
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 10;
+            setUploadProgress(Math.min(progress, 100));
+            if (progress >= 100) {
+                clearInterval(interval);
+                const newFolder = {
+                    id: Date.now(),
+                    name: files[0].webkitRelativePath.split('/')[0],
+                    items: files.length,
+                    modified: new Date().toLocaleString()
+                };
+                setFolders(prev => [...prev, newFolder]);
+                setIsLoading(false);
+                setIsModalOpen(false);
+            }
+        }, 200);
+    };
+
+    const startRename = (folderId, currentName) => {
+        setRenamingFolderId(folderId);
+        setNewFolderName(currentName);
+        setActiveMenuId(null);
+    };
+
+    const handleRenameSubmit = (folderId) => {
+        if (newFolderName.trim() === "") return;
+        setFolders(prev => prev.map(folder =>
+            folder.id === folderId ? { ...folder, name: newFolderName } : folder
+        ));
+        setRenamingFolderId(null);
+        toast.success("Folder renamed successfully!", {
+            position: "top-right",
+            autoClose: 3000,
+        });
+    };
+
+    const deleteFolder = (folderId) => {
+        setActiveMenuId(null);
+        if (window.confirm("Are you sure you want to delete this folder?")) {
+            setIsLoading(true);
+            setTimeout(() => {
+                setFolders(prev => prev.filter(folder => folder.id !== folderId));
+                setIsLoading(false);
+                toast.success("Folder deleted successfully!", {
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+            }, 1000);
+        }
     };
 
     return (
@@ -91,188 +149,158 @@ const Page = () => {
                 }
 
                 .actions {
-                    display: ${isMenuOpen ? 'block' : 'none'};
+                    display: ${activeMenuId ? 'block' : 'none'};
+                    position: absolute;
+                    right: 20px;
+                    background: white;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    padding: 5px;
+                }
+
+                .progress-bar {
+                    width: 100%;
+                    height: 10px;
+                    background: #f0f0f0;
+                    border-radius: 5px;
+                }
+                .progress {
+                    width: ${uploadProgress}%;
+                    height: 100%;
+                    background: #9662f9;
+                    transition: width 0.3s ease;
+                }
+
+                .rename-input {
+                    padding: 6px 10px;
+                    border: 2px solid #9662f9;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    width: 200px;
+                    outline: none;
+                    transition: all 0.3s ease;
+                }
+
+                .rename-input:focus {
+                    border-color: #7a4ed9;
+                    box-shadow: 0 0 5px rgba(150, 98, 249, 0.3);
                 }
             `}</style>
 
             <ManageHeader />
             <div className="loader"></div>
+            <ToastContainer />
             <main>
                 <div className="content">
                     <div className="box">
                         <div className="boxHeader">
                             <div className="folderpath">
-                                <a href="/video/assets/" className="link-tag">
-                                    Assets Library
-                                </a>
-                                <img
-                                    src="/images/chewron.svg"
-                                    alt="Chevron Icon"
-                                />
+                                <a href="#" className="link-tag">Assets Library</a>
+                                <img src="/images/chewron.svg" alt="Chevron Icon" />
                             </div>
                             <div className="newFolder">
-                                <a
-                                    href="/video/upload-folder/"
-                                    className="import-folder-link link-tag"
-                                    onClick={openModal}
-                                >
-                                    <img
-                                        src="/images/create.svg"
-                                        alt="Create Folder Icon"
-                                    />
-                                    <span style={{ paddingLeft: "5px" }}>
-                                        Import Folder
-                                    </span>
+                                <a href="#" className="import-folder-link link-tag" onClick={openModal}>
+                                    <img src="/images/create.svg" alt="Create Folder Icon" />
+                                    <span style={{ paddingLeft: "5px" }}>Import Folder</span>
                                 </a>
                             </div>
                         </div>
 
                         <div className="log">
                             <div className="log-header">
-                                <div>
-                                    <input
-                                        type="checkbox"
-                                        name="selectall"
-                                        id="selectall"
-                                        style={{ opacity: 0 }}
-                                    />
-                                    <div>Folder Name</div>
-                                </div>
+                                <div><input type="checkbox" name="selectall" id="selectall" style={{ opacity: 0 }} />Folder Name</div>
                                 <div>Items</div>
                                 <div>Modified At</div>
                             </div>
 
-                            <div className="log-item" ref={menuRef}>
-                                <div>
-                                    <input
-                                        type="checkbox"
-                                        name="selectall"
-                                        id="selectall2"
-                                        style={{ opacity: 0 }}
+                            {folders.map(folder => (
+                                <div className="log-item" key={folder.id} ref={menuRef}>
+                                    <div>
+                                        <input type="checkbox" name="selectall" id="selectall2" style={{ opacity: 0 }} />
+                                        <div>
+                                            {renamingFolderId === folder.id ? (
+                                                <input
+                                                    type="text"
+                                                    className="rename-input"
+                                                    value={newFolderName}
+                                                    onChange={(e) => setNewFolderName(e.target.value)}
+                                                    onBlur={() => handleRenameSubmit(folder.id)}
+                                                    onKeyPress={(e) => e.key === 'Enter' && handleRenameSubmit(folder.id)}
+                                                    autoFocus
+                                                />
+                                            ) : (
+                                                <a href="#" className="link-tag">{folder.name}</a>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div>{folder.items}</div>
+                                    <div>{folder.modified}</div>
+                                    <img
+                                        src="/images/dots.svg"
+                                        className="menu"
+                                        alt="Menu Options"
+                                        onClick={(e) => toggleMenu(e, folder.id)}
+                                        style={{ cursor: 'pointer' }}
                                     />
-                                    <div>
-                                        <a
-                                            href="/video/assets/36/"
-                                            className="link-tag"
-                                        >
-                                            hook_videos (4)
-                                        </a>
-                                    </div>
+                                    {activeMenuId === folder.id && (
+                                        <div className="actions">
+                                            <div>
+                                                <a
+                                                    href="#"
+                                                    className="rename-folder-link link-tag"
+                                                    onClick={() => startRename(folder.id, folder.name)}
+                                                >
+                                                    <img src="/images/edit-btn.svg" alt="Rename Icon" style={{width:'20px'}} />
+                                                    Rename
+                                                </a>
+                                            </div>
+                                            <div>
+                                                <a
+                                                    href="#"
+                                                    className="delete-folder-link link-tag"
+                                                    onClick={() => deleteFolder(folder.id)}
+                                                >
+                                                    <img src="/images/delete-icn.svg" alt="Delete Icon" style={{width:'20px'}} />
+                                                    Delete
+                                                </a>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                                <div>5</div>
-                                <div>Feb. 13, 2025, 2:34 p.m.</div>
-                                <img
-                                    src="/images/dots.svg"
-                                    className="menu"
-                                    alt="Menu Options"
-                                    onClick={toggleMenu}
-                                    style={{ cursor: 'pointer' }}
-                                />
-                                <div className="actions">
-                                    <div>
-                                        <a
-                                            href="#"
-                                            className="rename-folder-link link-tag"
-                                        >
-                                            <img
-                                                src="/images/edit-btn.svg"
-                                                alt="Rename Icon" style={{width:'20px'}}
-                                            />
-                                            
-                                            Rename
-                                        </a>
-                                    </div>
-                                    <div>
-                                        <a
-                                            href="#"
-                                            className="delete-folder-link link-tag"
-                                            style={{width:'20px'}}
-                                        >
-                                            <img
-                                                src="/images/delete-icn.svg"
-                                                alt="Delete Icon"
-                                            />
-                                            Delete
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     </div>
                 </div>
             </main>
 
-            {/* Modal Popup */}
             {isModalOpen && (
                 <div className="modal" style={{ display: 'block' }}>
                     <div className="modal-content">
-                        <form
-                            method="POST"
-                            id="uploadForm"
-                            encType="multipart/form-data"
-                            onSubmit={handleUploadSubmit}
-                        >
-                            <input
-                                type="hidden"
-                                name="csrfmiddlewaretoken"
-                                value="QqZr0zhZgc5nUWFY9tVHY0Cl8cL27bpQ6qCZ4twz9MlSBr1DkvQ0AkysQrApBKsm"
-                                readOnly
-                            />
+                        <form onSubmit={handleUploadSubmit}>
+                            <input type="hidden" name="csrfmiddlewaretoken" value="..." />
                             <div className="modal-text">
                                 <h2>Upload Folder</h2>
                                 <p>Please Make Sure Your Folder Contains Video Clips</p>
                             </div>
                             <input
-                                id="fileInput"
+                                ref={fileInputRef}
                                 className="fileUpload"
                                 type="file"
                                 name="folder"
                                 webkitdirectory=""
                                 multiple
                             />
-                            <input
-                                type="text"
-                                id="directories"
-                                name="directories"
-                                hidden
-                                value=""
-                                readOnly
-                            />
-                            <input
-                                type="text"
-                                name="purpose"
-                                hidden
-                                value="text_file"
-                                readOnly
-                            />
                             <div>
                                 <div className="progressPercent">
-                                    <span id="progressPercent">0%</span>
+                                    <span id="progressPercent">{uploadProgress}%</span>
                                 </div>
                                 <div className="progress-bar">
                                     <div className="progress" id="progressBar"></div>
                                 </div>
                             </div>
-                            <div
-                                id="uploadStatus"
-                                style={{ textAlign: "center", marginTop: "12px" }}
-                            ></div>
                             <div className="modal-buttons">
-                                <button
-                                    className="cancel-btn"
-                                    type="button"
-                                    id="uploadCancelBtn"
-                                    onClick={closeModal}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    className="upload-btn"
-                                    id="videoUploadButton"
-                                    type="submit"
-                                >
-                                    Upload
-                                </button>
+                                <button type="button" className="cancel-btn" onClick={closeModal}>Cancel</button>
+                                <button type="submit" className="upload-btn">Upload</button>
                             </div>
                         </form>
                     </div>
